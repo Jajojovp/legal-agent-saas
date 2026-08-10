@@ -1,0 +1,594 @@
+{
+  "common": {
+    "appName": "LegalAgent",
+    "tagline": "Crecimiento Impulsado por IA para Firmas Legales Modernas",
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "search": "Buscar",
+    "close": "Cerrar",
+    "back": "Volver",
+    "next": "Siguiente",
+    "submit": "Enviar",
+    "viewAll": "Ver Todo",
+    "learnMore": "Saber Más",
+    "getStarted": "Comenzar",
+    "perMonth": "/mes",
+    "perYear": "/año",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "savePercent": "Ahorra {percent}%",
+    "popular": "MÁS POPULAR",
+    "trustedBy": "Usado por {count}+ Firmas de Abogados",
+    "noCreditCard": "Sin tarjeta de crédito",
+    "setupMinutes": "Configuración en 5 minutos",
+    "cancelAnytime": "Cancela cuando quieras",
+    "language": "Idioma",
+    "english": "English",
+    "spanish": "Español"
+  },
+  "nav": {
+    "features": "Características",
+    "reviews": "Opiniones",
+    "pricing": "Precios",
+    "signIn": "Iniciar Sesión",
+    "signOut": "Cerrar Sesión",
+    "startTrial": "Prueba Gratis",
+    "dashboard": "Panel",
+    "leads": "Prospectos",
+    "cases": "Casos",
+    "tasks": "Tareas",
+    "billing": "Facturación",
+    "analytics": "Analíticas",
+    "messages": "Mensajes",
+    "settings": "Configuración",
+    "searchPlaceholder": "Buscar casos, clientes, documentos..."
+  },
+  "auth": {
+    "backToHome": "Volver al sitio",
+    "login": "Iniciar Sesión",
+    "register": "Crear Cuenta",
+    "loginTitle": "Bienvenido de vuelta",
+    "loginSubtitle": "Inicia sesión en tu cuenta de LegalAgent",
+    "registerTitle": "Comienza tu prueba gratuita",
+    "registerSubtitle": "Crea tu cuenta y empieza a captar más clientes hoy",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "fullName": "Nombre completo",
+    "firmName": "Nombre del bufete",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "orContinueWith": "O continuar con",
+    "signInGoogle": "Iniciar sesión con Google",
+    "trialInfo": "14 días de prueba gratis • Sin tarjeta de crédito",
+    "errors": {
+      "invalidCredentials": "Correo o contraseña incorrectos",
+      "emailInUse": "Ya existe una cuenta con este correo",
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "weakPassword": "La contraseña debe tener al menos 8 caracteres"
+    }
+  },
+  "landing": {
+    "about": {
+      "badge": "Inteligencia Legal",
+      "title1": "Somos LegalAgent,",
+      "title2": "un SO potenciado por IA.",
+      "title3": "Automatizamos casos, facturación y operaciones para firmas legales modernas."
+    },
+    "hero": {
+      "badge": "Usado por {count}+ Firmas de Abogados en USA y Canadá",
+      "title": "Convierte Visitantes Web en",
+      "titleHighlight": "Clientes que Pagan 24/7",
+      "subtitle": "Un chatbot con IA captura, califica y convierte prospectos mientras tú te enfocas en ganar casos.",
+      "subtitleBold": "Sin tarjeta de crédito. Configuración en 5 minutos.",
+      "ctaPrimary": "Iniciar Prueba Gratuita",
+      "ctaSecondary": "Ver Demo de 2 Min"
+    },
+    "stats": {
+      "firms": "Firmas Activas",
+      "firmsValue": "500+",
+      "leads": "Prospectos Captados",
+      "leadsValue": "50K+",
+      "successRate": "Tasa de Éxito",
+      "successRateValue": "94%",
+      "satisfaction": "Satisfacción del Cliente",
+      "satisfactionValue": "4.9/5"
+    },
+    "features": {
+      "title": "Todo lo que tu Firma Necesita",
+      "subtitle": "Una plataforma de gestión completa diseñada específicamente para firmas legales modernas",
+      "chatbot": {
+        "title": "Chatbot IA 24/7",
+        "description": "Captura y califica prospectos automáticamente mientras duermes. Nunca pierdas un cliente potencial."
+      },
+      "analytics": {
+        "title": "Analíticas Inteligentes",
+        "description": "Rastrea KPIs, tendencias de ingresos y rendimiento de tu práctica con paneles en tiempo real."
+      },
+      "security": {
+        "title": "Seguro y Conforme",
+        "description": "Cifrado de nivel bancario y cumplimiento total con las regulaciones de la industria legal."
+      },
+      "timeTracking": {
+        "title": "Control de Horas",
+        "description": "Seguimiento automatizado de horas facturables y facturación. Cobra más rápido."
+      },
+      "crm": {
+        "title": "CRM y Gestión de Casos",
+        "description": "Administra clientes, casos y plazos en una sola plataforma poderosa."
+      },
+      "growth": {
+        "title": "Haz Crecer tu Práctica",
+        "description": "La puntuación de prospectos con IA te ayuda a enfocarte en clientes de alto valor."
+      }
+    },
+    "testimonials": {
+      "badge": "Confianza y Excelencia",
+      "title": "Lo que dicen las firmas visionarias",
+      "subtitle": "Mira lo que dicen los abogados sobre LegalAgent",
+      "quote1": "LegalAgent transformó completamente cómo manejamos los prospectos. La integración de IA nos ahorra unas 15 horas a la semana.",
+      "role1": "Socia Directora, Jenkins & Co",
+      "quote2": "La facturación automatizada y el soporte multi-moneda nos permitió expandir nuestra práctica sin problemas por toda LATAM y EE. UU.",
+      "role2": "Fundador, Mendoza Legal",
+      "quote3": "Es raro encontrar una plataforma que se sienta tan premium mientras ofrece verdadero poder de nivel empresarial. Excepcional.",
+      "role3": "Abogada Senior"
+    },
+    "cta": {
+      "title": "¿Listo para Transformar tu Práctica?",
+      "subtitle": "Únete a {count}+ firmas usando IA para captar más clientes, ganar más casos y crecer más rápido.",
+      "subtitleBold": "Comienza tu prueba gratuita de 14 días hoy. Sin tarjeta de crédito.",
+      "ctaPrimary": "Iniciar Prueba Gratis",
+      "ctaSecondary": "Agendar Demo",
+      "guarantee": "✓ 14 días de prueba  |  ✓ Sin tarjeta de crédito  |  ✓ Cancela cuando quieras"
+    },
+    "footer": {
+      "description": "Gestión legal impulsada por IA para firmas modernas.",
+      "product": "Producto",
+      "company": "Empresa",
+      "support": "Soporte",
+      "about": "Nosotros",
+      "contact": "Contacto",
+      "privacy": "Política de Privacidad",
+      "terms": "Términos de Servicio",
+      "helpCenter": "Centro de Ayuda",
+      "liveChat": "Chat en Vivo",
+      "emailSupport": "Soporte por Email",
+      "scheduleDemo": "Agendar Demo",
+      "apiDocs": "Documentación API",
+      "copyright": "© {year} LegalAgent. Todos los derechos reservados. Hecho con ❤️ para abogados."
+    }
+  },
+  "pricing": {
+    "title": "Precios Simples y Transparentes",
+    "subtitle": "Elige el plan que se adapta a tu práctica. Todos los planes incluyen 14 días de prueba gratis.",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "savePercent": "Ahorra {percent}%",
+    "perMonth": "/mes",
+    "popular": "Más Popular",
+    "freeTrial": "14 días de prueba gratis",
+    "noCard": "Sin tarjeta de crédito",
+    "cta": "Iniciar Prueba Gratis",
+    "starter": {
+      "name": "Inicial",
+      "subtitle": "Para abogados independientes"
+    },
+    "professional": {
+      "name": "Profesional",
+      "subtitle": "Para firmas en crecimiento"
+    },
+    "firm": {
+      "name": "Firma",
+      "subtitle": "Para prácticas establecidas"
+    },
+    "features": {
+      "attorney1": "1 licencia de abogado",
+      "attorney3": "3 licencias de abogado",
+      "attorney10": "10 licencias de abogado",
+      "ai200": "200 consultas IA/mes",
+      "ai500": "500 consultas IA/mes",
+      "ai2000": "2.000 consultas IA/mes",
+      "crmBasic": "CRM y gestión de casos básica",
+      "crmFull": "CRM completo y automatización",
+      "billing": "Control de horas y facturación",
+      "analytics": "Analíticas básicas",
+      "analyticsAdvanced": "Analíticas avanzadas y reportes",
+      "aiScoring": "Puntuación de prospectos con IA",
+      "support": "Soporte por email",
+      "supportPriority": "Soporte prioritario",
+      "support247": "Soporte prioritario 24/7",
+      "whiteLabel": "Chatbot con marca propia",
+      "api": "API e integraciones personalizadas",
+      "manager": "Gerente de cuenta dedicado"
+    },
+    "faq": {
+      "title": "Preguntas Frecuentes",
+      "q1": "¿Puedo cambiar de plan después?",
+      "a1": "Sí, puedes cambiar de plan en cualquier momento. Los cambios se aplican al inicio del siguiente ciclo de facturación.",
+      "q2": "¿Qué métodos de pago aceptan?",
+      "a2": "Aceptamos todas las tarjetas de crédito y débito principales a través de Takenos, procesado por MercadoPago. Los pagos pueden hacerse en USD o en tu moneda local.",
+      "q3": "¿Hay un contrato a largo plazo?",
+      "a3": "No. Todos los planes son mes a mes o anuales. Cancela cuando quieras sin penalizaciones.",
+      "q4": "¿Puedo probar antes de comprar?",
+      "a4": "Absolutamente. Todos los planes incluyen 14 días de prueba gratis. No se requiere tarjeta de crédito para comenzar."
+    }
+  },
+  "sales": {
+    "hero": {
+      "badge": "ATENCIÓN: Firmas de Abogados Perdiendo $15.000+/Mes por Estos Problemas",
+      "title": "Estás Perdiendo 6 de Cada 10 Prospectos",
+      "titleHighlight": "Porque No Estás Disponible 24/7",
+      "subtitle": "La mayoría de los clientes potenciales buscan abogados",
+      "subtitleHighlight": "después de las 6 PM y los fines de semana",
+      "subtitleEnd": ". Si no estás ahí para responder al instante, están llamando a tu competencia.",
+      "calcTitle": "Calcula Lo Que Estás Perdiendo AHORA MISMO:",
+      "stat1Value": "60%",
+      "stat1Label": "de prospectos llegan fuera de horario (promedio de la industria)",
+      "stat2Value": "$15K+",
+      "stat2Label": "ingresos perdidos por mes para una firma típica",
+      "cta": "Deja de Perder Clientes — Prueba Gratis"
+    },
+    "painPoints": {
+      "title": "4 Problemas Críticos que te Cuestan $180K+/Año",
+      "subtitle": "Y cómo LegalAgent resuelve cada uno automáticamente",
+      "problem": "Problema:",
+      "solution": "Solución:",
+      "impact": "Impacto:",
+      "items": [
+        {
+          "problem": "Pierdes 60% de Prospectos Fuera de Horario",
+          "solution": "Nuestro chatbot con IA captura prospectos 24/7, incluso a las 2 AM",
+          "impact": "+127% tasa de captación de prospectos"
+        },
+        {
+          "problem": "15+ Horas/Semana en Trabajo Administrativo",
+          "solution": "Control de horas, facturación y agenda automatizados",
+          "impact": "Ahorra $12.000/año por abogado"
+        },
+        {
+          "problem": "Promedio de 45 Días de Demora en Pagos",
+          "solution": "Facturación instantánea con seguimientos automáticos",
+          "impact": "Cobra 28 días más rápido"
+        },
+        {
+          "problem": "20% de Conversión Prospecto-a-Cliente",
+          "solution": "La IA prioriza prospectos de alto valor con puntuación",
+          "impact": "2.3x aumento en tasa de conversión"
+        }
+      ]
+    },
+    "howItWorks": {
+      "title": "Cómo LegalAgent Captura Prospectos en Piloto Automático",
+      "subtitle": "Sistema simple de 4 pasos que trabaja mientras duermes",
+      "steps": [
+        {
+          "title": "IA Captura Prospectos 24/7",
+          "description": "El chatbot califica visitantes, agenda consultas y recopila información de contacto mientras duermes.",
+          "result": "Nunca más pierdas un cliente potencial",
+          "bullet1": "Califica visitantes web al instante",
+          "bullet2": "Agenda consultas automáticamente",
+          "bullet3": "Recopila información de contacto"
+        },
+        {
+          "title": "Puntuación Inteligente",
+          "description": "La IA analiza conversaciones y asigna puntuaciones 0-100 basadas en presupuesto, urgencia y ajuste.",
+          "result": "Enfócate solo en casos de alto valor",
+          "bullet1": "Analiza urgencia del caso",
+          "bullet2": "Filtra prospectos de bajo valor",
+          "bullet3": "Notifica a tu equipo al instante"
+        },
+        {
+          "title": "Seguimiento Automatizado",
+          "description": "Secuencias de email nutren prospectos, recuerdan plazos y re-enganchan prospectos fríos.",
+          "result": "Recupera 30% de prospectos abandonados"
+        },
+        {
+          "title": "Rastrea y Cobra Más Rápido",
+          "description": "Control de horas automático se convierte en facturas con 1 clic. Procesamiento de pagos integrado.",
+          "result": "Reduce cuentas por cobrar en 40%",
+          "bullet1": "Control de horas automatizado",
+          "bullet2": "Facturación con 1 clic",
+          "bullet3": "Procesamiento de pagos global"
+        }
+      ]
+    },
+    "socialProof": {
+      "firmsValue": "847",
+      "firmsLabel": "Firmas Usando LegalAgent",
+      "leadsValue": "127%",
+      "leadsLabel": "Aumento Promedio de Prospectos (Primeros 60 Días)",
+      "timeValue": "18hrs",
+      "timeLabel": "Ahorradas Por Semana Por Abogado",
+      "revenueValue": "$284K",
+      "revenueLabel": "Ingresos Adicionales Promedio (Año 1)"
+    },
+    "comparison": {
+      "title": "Por Qué LegalAgent es 10x Mejor Valor",
+      "subtitle": "Compáranos vs. software legacy que cobra 5-10x más",
+      "features": {
+        "ai": "Funciones con IA",
+        "chatbot": "Chatbot de Captación 24/7",
+        "analytics": "Analíticas Avanzadas",
+        "timeTracking": "Control de Horas y Facturación"
+      }
+    },
+    "launchPricing": {
+      "title": "Precio Especial de Lanzamiento — 50% OFF",
+      "lockPrice": "Bloquea este precio para siempre. Sin aumentos. Nunca.",
+      "spotsLeft": "Solo quedan {count} cupos a este precio"
+    },
+    "guarantee": {
+      "title": "Garantía 100% Libre de Riesgo",
+      "items": [
+        "14 días de prueba gratis — Sin tarjeta de crédito",
+        "Garantía de devolución de 30 días",
+        "Cancela en cualquier momento con 1 clic",
+        "Conserva todos tus datos si te vas",
+        "Garantía de disponibilidad 99.9% SLA"
+      ]
+    },
+    "finalCta": {
+      "title": "¿Listo para Dejar de Perder $15K+/Mes?",
+      "subtitle": "Únete a {count} firmas de abogados captando más prospectos, ganando más casos y creciendo más rápido con IA.",
+      "cta": "Comienza Tu Prueba Gratuita de 14 Días",
+      "info": "Sin tarjeta de crédito • Configuración en 5 minutos • Cancela cuando quieras"
+    }
+  },
+  "dashboard": {
+    "title": "Panel de Control",
+    "welcome": "¡Bienvenido de vuelta! Esto es lo que está pasando con tu práctica.",
+    "kpi": {
+      "newLeads": "Nuevos Prospectos Este Mes",
+      "activeCases": "Casos Activos",
+      "revenue": "Ingresos Este Mes",
+      "billableHours": "Horas Facturables",
+      "fromLastMonth": "{change} respecto al mes anterior"
+    },
+    "recentLeads": {
+      "title": "Prospectos Recientes",
+      "subtitle": "Últimas consultas desde tu sitio web"
+    },
+    "deadlines": {
+      "title": "Próximos Plazos",
+      "subtitle": "Tareas y plazos que requieren atención",
+      "dueIn": "Vence en {time}"
+    },
+    "revenueBreakdown": {
+      "title": "Ingresos por Área de Práctica",
+      "subtitle": "Desglose de ingresos mensuales"
+    },
+    "quickActions": {
+      "title": "Acciones Rápidas",
+      "subtitle": "Tareas comunes y atajos",
+      "addLead": "Agregar Nuevo Prospecto",
+      "createCase": "Crear Nuevo Caso",
+      "generateInvoice": "Generar Factura",
+      "viewCalendar": "Ver Calendario"
+    }
+  },
+  "leads": {
+    "title": "Prospectos",
+    "subtitle": "Gestiona prospectos y posibles clientes",
+    "export": "Exportar",
+    "newLead": "Nuevo Prospecto",
+    "search": "Buscar prospectos...",
+    "totalLeads": "Total de Prospectos",
+    "newThisWeek": "Nuevos (Esta Semana)",
+    "consultationsScheduled": "Consultas Agendadas",
+    "conversionRate": "Tasa de Conversión",
+    "all": "Todos",
+    "new": "Nuevos",
+    "contacted": "Contactados",
+    "qualified": "Calificados",
+    "score": "Puntaje",
+    "unassigned": "Sin asignar",
+    "email": "Correo",
+    "convertToCase": "Convertir a Caso",
+    "noLeadsFound": "No se encontraron prospectos",
+    "websiteChat": "Chat del Sitio Web",
+    "referral": "Referencia",
+    "other": "Otro"
+  },
+  "tasks": {
+    "title": "Tareas y Plazos",
+    "subtitle": "Rastrea y gestiona los plazos de los casos y tareas",
+    "newTask": "Nueva Tarea",
+    "search": "Buscar tareas...",
+    "pending": "Pendientes",
+    "all": "Todas",
+    "completed": "Completadas",
+    "allPriority": "Toda Prioridad",
+    "urgent": "Urgente",
+    "high": "Alta",
+    "medium": "Media",
+    "low": "Baja",
+    "pendingTasks": "Tareas Pendientes",
+    "dueToday": "Vence Hoy",
+    "overdue": "Atrasadas",
+    "thisWeek": "Esta Semana",
+    "edit": "Editar",
+    "complete": "Completar",
+    "reopen": "Reabrir",
+    "noTasksFound": "No se encontraron tareas",
+    "assignedTo": "Asignado a"
+  },
+  "billing": {
+    "title": "Facturación e Ingresos",
+    "subtitle": "Gestiona facturas y seguimiento de pagos",
+    "newInvoice": "Nueva Factura",
+    "export": "Exportar",
+    "all": "Todas",
+    "draft": "Borrador",
+    "sent": "Enviada",
+    "paid": "Pagada",
+    "overdue": "Vencida",
+    "invoices": "Facturas",
+    "timeEntries": "Registros de Tiempo",
+    "totalBilled": "Total Facturado",
+    "collected": "Cobrado",
+    "outstanding": "Pendiente",
+    "unbilledHours": "Horas No Facturadas",
+    "unbilledValue": "Valor No Facturado",
+    "paymentProgress": "Progreso de Pago",
+    "viewPdf": "Ver PDF",
+    "sendToClient": "Enviar al Cliente",
+    "recordPayment": "Registrar Pago",
+    "sendReminder": "Enviar Recordatorio",
+    "due": "Vence",
+    "paidLabel": "pagado",
+    "recentTimeEntries": "Registros de Tiempo Recientes",
+    "addTimeEntry": "Agregar Registro",
+    "bill": "Facturar",
+    "description": "Descripción",
+    "hours": "Horas",
+    "rate": "Tarifa",
+    "amount": "Monto",
+    "status": "Estado",
+    "dueDate": "Fecha de Vencimiento",
+    "invoiceNumber": "Factura #",
+    "client": "Cliente",
+    "viewDetails": "Ver Detalles",
+    "markAsPaid": "Marcar como Pagada",
+    "totalOutstanding": "Total Pendiente",
+    "collectionRate": "Tasa de Cobranza"
+  },
+  "analytics": {
+    "title": "Analíticas y Reportes",
+    "subtitle": "Métricas e información de rendimiento de la práctica",
+    "revenue": "Tendencia de Ingresos",
+    "revenueSubtitle": "Ingresos mensuales y volumen de casos a lo largo del tiempo",
+    "cases": "casos",
+    "leadFunnel": "Embudo de Conversión de Prospectos",
+    "leadFunnelSubtitle": "Tasa de conversión de visitante a cliente",
+    "practicePerformance": "Rendimiento por Área de Práctica",
+    "practicePerformanceSubtitle": "Ingresos, casos y valor promedio por área de práctica",
+    "kpiMetrics": "Métricas KPI",
+    "leadConversion": "Tasa de Conversión",
+    "avgCaseValue": "Valor Prom. de Caso",
+    "clientRetention": "Retención de Clientes",
+    "billableHours": "Horas Facturables",
+    "collectionRate": "Tasa de Cobranza",
+    "responseTime": "Tiempo de Respuesta",
+    "exportReport": "Exportar Reporte",
+    "visitors": "Visitantes Web",
+    "chatEngaged": "Chats Iniciados",
+    "leadsCaptured": "Prospectos Captados",
+    "consultations": "Consultas",
+    "clients": "Clientes",
+    "revenueLabel": "Ingresos",
+    "casesLabel": "Casos",
+    "avgCaseValueLabel": "Valor Prom. de Caso",
+    "totalCases": "Total de Casos",
+    "pctOfRevenue": "% de Ingresos",
+    "timeDistribution": "Distribución de Tiempo",
+    "timeDistributionSubtitle": "Cómo tu equipo usa las horas facturables",
+    "clientAcquisitionCost": "Costo de Adquisición de Cliente",
+    "clientAcquisitionCostSubtitle": "Gasto de marketing por nuevo cliente",
+    "perClient": "por cliente"
+  },
+  "messages": {
+    "title": "Mensajes",
+    "subtitle": "Conversaciones del chatbot e interacciones de prospectos",
+    "totalConversations": "Total de Conversaciones",
+    "newLeads": "Nuevos Prospectos",
+    "qualified": "Calificados",
+    "unread": "No Leídos",
+    "searchConversations": "Buscar conversaciones...",
+    "unknownVisitor": "Visitante Desconocido",
+    "selectConversation": "Selecciona una conversación para ver",
+    "convertToLead": "Convertir a Prospecto",
+    "createLeadFromConversation": "Crear Prospecto desde Conversación",
+    "downloadTranscript": "Descargar Transcripción",
+    "newLeadStatus": "Nuevo Prospecto",
+    "abandoned": "Abandonado",
+    "converted": "Convertido",
+    "justNow": "Ahora mismo",
+    "minutesAgo": "Hace {minutes}m",
+    "hoursAgo": "Hace {hours}h",
+    "daysAgo": "Hace {days}d"
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Administra la cuenta y preferencias de tu firma",
+    "firmProfile": "Perfil de la Firma",
+    "teamMembers": "Miembros del Equipo",
+    "integrations": "Integraciones",
+    "billingPlan": "Facturación y Planes",
+    "notifications": "Notificaciones",
+    "security": "Seguridad",
+    "updateFirmInfo": "Actualiza la información de tu firma de abogados",
+    "firmName": "Nombre de la Firma",
+    "contactEmail": "Correo de Contacto",
+    "phone": "Teléfono",
+    "website": "Sitio Web",
+    "address": "Dirección",
+    "city": "Ciudad",
+    "state": "Estado",
+    "zipCode": "Código Postal",
+    "practiceAreas": "Áreas de Práctica",
+    "saveChanges": "Guardar Cambios",
+    "manageTeam": "Administra el acceso de abogados y personal",
+    "inviteMember": "Invitar Miembro",
+    "active": "Activo",
+    "manageIntegrations": "Conecta servicios de terceros para mejorar tu flujo de trabajo",
+    "connected": "Conectado",
+    "configure": "Configurar",
+    "connect": "Conectar",
+    "currentPlan": "Plan Actual",
+    "currentPlanSubtitle": "Actualmente estás en el plan Profesional",
+    "professionalPlan": "Plan Profesional",
+    "planDetails": "3 abogados · 500 consultas IA/mes · Automatización de email",
+    "perMonth": "por mes",
+    "nextBillingDate": "Próxima fecha de facturación",
+    "aiQueriesUsed": "Consultas IA usadas este mes",
+    "changePlan": "Cambiar Plan",
+    "cancelSubscription": "Cancelar Suscripción",
+    "paymentMethod": "Método de Pago",
+    "update": "Actualizar",
+    "notificationPreferences": "Preferencias de Notificación",
+    "manageNotifications": "Administra cómo recibes actualizaciones y alertas",
+    "emailNotifications": "Notificaciones por Email",
+    "smsNotifications": "Notificaciones SMS",
+    "savePreferences": "Guardar Preferencias",
+    "password": "Contraseña",
+    "updatePassword": "Actualiza tu contraseña regularmente por seguridad",
+    "currentPassword": "Contraseña Actual",
+    "newPassword": "Nueva Contraseña",
+    "confirmPassword": "Confirmar Nueva Contraseña",
+    "updatePasswordBtn": "Actualizar Contraseña",
+    "twoFactor": "Autenticación de Dos Factores",
+    "twoFactorSubtitle": "Añade una capa extra de seguridad a tu cuenta",
+    "twoFactorStatus": "Estado de 2FA",
+    "twoFactorDisabled": "La autenticación de dos factores está desactivada",
+    "enable2fa": "Activar 2FA",
+    "activeSessions": "Sesiones Activas",
+    "activeSessionsSubtitle": "Administra tus sesiones de inicio de sesión activas",
+    "current": "Actual",
+    "revoke": "Revocar"
+  },
+  "chatbot": {
+    "greeting": "¡Hola! Soy el asistente virtual de {firmName}. Estoy aquí para ayudar a responder sus preguntas y conectarlo con un abogado. ¿En qué puedo ayudarle hoy?",
+    "placeholder": "Escribe tu mensaje...",
+    "disclaimer": "Este chatbot proporciona información general únicamente y no constituye asesoría legal.",
+    "legalAssistant": "Asistente Legal",
+    "errorMessage": "Disculpe, estoy teniendo problemas de conexión en este momento. Por favor intente nuevamente o llámenos directamente.",
+    "processing": "Procesando..."
+  },
+  "payment": {
+    "takenosBanner": "Impulsado por Takenos — Recibe pagos en USD",
+    "takenosDesc": "Pagos internacionales seguros para Latinoamérica",
+    "acceptedCards": "Visa, Mastercard, AMEX aceptadas",
+    "processor": "Procesado por Takenos y MercadoPago",
+    "secure": "Pago con cifrado SSL de 256 bits",
+    "startTrial": "Iniciar Prueba Gratis de 14 Días",
+    "processing": "Procesando...",
+    "errorTitle": "Error de Pago",
+    "errorMessage": "Verifica tus datos de pago e intenta nuevamente.",
+    "genericError": "Error de conexión. Intenta nuevamente."
+  }
+}

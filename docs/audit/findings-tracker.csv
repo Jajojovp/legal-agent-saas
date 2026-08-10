@@ -1,0 +1,64 @@
+id,severidad,titulo,evidencia_archivo_linea,criterio_spec,estado,responsable,plazo
+F1,P0,"Chatbot GET protegido pero POST aún permite acceso cross-tenant a conversaciones por sessionId","app/api/chatbot/message/route.ts:75-83 (lectura por sessionId sin firmId), :105-119 (update por conversation.id sin firmId); GET :148-155 sí filtra firmId","spec seguridad-domain: control de acceso least-privilege; OWASP A01/API1 BOLA; ISO 27001 A.5.15 A.8.31",Needs Evidence,TBD,7d (Sprint 0)
+F2,P0,"Subida y analisis de documentos legales requiere autenticacion","app/api/ai/analyze-document/route.ts:6-10 (requireAuth antes de formData); faltan pruebas de route handler y rate-limit","spec seguridad-domain: inventario y clasificacion de informacion; OWASP A01/A04; ISO 27001 A.5.12 A.5.34 A.8.10",Needs Evidence,TBD,7d (Sprint 0)
+F3,P0,"Knowledge base autenticada y firmId derivado del contexto","app/api/ai/knowledge/route.ts:17-29 (POST requireAuth + resolveFirmId sobrescribe), :56-63 (GET ignora query firmId y usa authCtx.firmId); faltan pruebas HTTP/DB","spec seguridad-domain: aislamiento por tenant; OWASP A01/A08 integridad KB; ISO 27001 A.5.14 A.5.18",Confirmed Fixed,TBD,7d (Sprint 0)
+F4,P0,"PATCH de leads y qualify filtran tenant y ownership","app/api/leads/route.ts:88-109 (canModifyLead + UPDATE eq firmId), app/api/leads/qualify/route.ts:20-51 (misma defensa); fetch inicial por id queda sin scope pero la autorización rechaza cross-tenant","spec seguridad-domain: authorization por objeto; OWASP A01 BOLA; ISO 27001 A.5.15 A.8.3",Confirmed Fixed,TBD,7d (Sprint 0)
+F5,P0,"Sesion JWT propaga firmId/role/isActive y requireAuth devuelve AuthContext","app/api/auth/[...nextauth]/auth-options.ts:65-75, lib/auth/context.ts:39-51, :60-68, lib/auth/session.ts:20-25; tests/auth/context.test.ts y flow.test.ts","spec seguridad-domain: RBAC y tenant isolation; OWASP A01/A07; ISO 27001 A.5.16 A.5.18",Confirmed Fixed,TBD,7d (Sprint 0)
+F6,P1,"Verificacion de certificado TLS deshabilitada para Postgres","lib/db/index.ts:13 (ssl rejectUnauthorized:false)","spec seguridad-domain: cifrado en transito TLS 1.3; OWASP A02; ISO 27001 A.8.24 A.8.21",Open,TBD,30d (Sprint 1)
+F7,P1,"next.config.js no aplica CSP/HSTS/Permissions-Policy","next.config.js:19-31 (solo 4 headers), lib/security/middleware.ts:161-198 (addSecurityHeaders nunca invocado)","spec seguridad-domain: secure defaults y headers; OWASP A05; ISO 27001 A.8.26",Open,TBD,30d (Sprint 1)
+F8,P1,"middleware.ts solo protege dashboard por presencia de cookie; no es gate global ni cubre API/rate-limit/headers","middleware.ts:19-34 y :36-42 (gate únicamente /dashboard; matcher excluye api; headers siguen en next.config.js)","spec seguridad-domain: secure by default; OWASP A01/A05; ISO 27001 A.8.20 A.5.15",Needs Evidence,TBD,30d (Sprint 1)
+F9,P1,"CSRF declarado 100% pero validateCSRFToken nunca se invoca","lib/security/middleware.ts:61-68 (definicion), grep app/** sin hits","spec seguridad-domain: anti-CSRF; OWASP A01 CSRF; ISO 27001 A.8.26",Open,TBD,30d (Sprint 1)
+F10,P2,"Registro enumera emails sin rate-limit ni verificacion de email ni password policy","app/api/auth/register/route.ts:8-13,29-36,53","spec seguridad-domain: ciclo identidad; OWASP A07/A04; ISO 27001 A.5.16 A.5.17 A.8.2",Open,TBD,90d (Sprint 2)
+F11,P2,"validateFileUpload confia en file.type del cliente sin magic bytes","lib/security/middleware.ts:240-279","spec seguridad-domain: validacion server-side uploads; OWASP A04/A03; ISO 27001 A.8.31 A.8.10",Open,TBD,90d (Sprint 2)
+F12,P2,"Rate limiter in-memory no distribuido (Vercel serverless)","lib/security/middleware.ts:3-38, app/api/chatbot/message/route.ts:8-23","spec seguridad-domain: proteccion abuso; OWASP A07 CWE-770; ISO 27001 A.8.6 A.8.20",Open,TBD,90d (Sprint 2)
+F13,P2,"SECURITY-AUDIT.md contiene claims de controles inexistentes (CSRF/Headers/File Upload 100%)","SECURITY-AUDIT.md:14,360,632,670,895 vs evidencia F7/F9/F11","spec seguridad-domain: documentar control con evidencia (control > opinion); ISO 27001 A.5.23 A.5.24",Open,TBD,90d (Sprint 2)
+F14,P2,"logSecurityEvent solo console.log no persistente","lib/security/middleware.ts:293-299","spec seguridad-domain: logging persistente e inmutable; OWASP A09; ISO 27001 A.8.15 A.8.16",Open,TBD,90d (Sprint 2)
+F15,P3,"Registro fija role=owner (auto-elevacion)","app/api/auth/register/route.ts:53","spec seguridad-domain: least privilege; OWASP A07; ISO 27001 A.5.18",Open,TBD,Backlog
+F16,P3,"JWT maxAge 30d sin refresh ni revocacion","app/api/auth/[...nextauth]/auth-options.ts:50","spec seguridad-domain: ciclo sesion; OWASP A07 ASVS 3.4.1; ISO 27001 A.5.17",Open,TBD,Backlog
+F17,P3,"Webhook MP verifica firma pero no actualiza estado ni implementa idempotencia por X-Request-Id","app/api/payments/mp/webhook/route.ts:14-21 (firma SI verificada, lineas 19-21 solo console.log)","spec backend-domain y seguridad-domain: idempotencia y reconciliacion financiera; OWASP A08/A09; ISO 27001 A.8.5",Open,TBD,Backlog
+F18,P3,"console.error puede loguear stacks con PII o tokens","app/api/auth/register/route.ts:57, app/api/payments/mp/webhook/route.ts:23, app/api/chatbot/message/route.ts","spec seguridad-domain: sanitizacion logs; OWASP A09 ASVS 7.1.4",Open,TBD,Backlog
+F19,P3,"validateAPIKey solo valida prefijo+longitud sin persistir","lib/security/middleware.ts:203-208","spec seguridad-domain: gestin secretos; OWASP A07; ISO 27001 A.5.17",Open,TBD,Backlog
+F20,P3,".env.local presente en workspace (no leido); sin git history para escaneo secrets",".env.local (presente), .gitignore OK, sin .git","spec seguridad-domain: secrets management y pre-commit scanning; ISO 27001 A.5.12 A.5.24",Open,TBD,Backlog
+F21,P3,"lib/db/supabase-init.sql vacio: sin RLS como defense-in-depth","lib/db/supabase-init.sql","spec seguridad-domain: least privilege DB; ISO 27001 A.8.31",Open,TBD,Backlog
+F22,P3,"Dependencias con rango suelto sin SBOM ni npm audit en CI","package.json:18-43 (next-auth ^4.24.7, next ^14.1.4, drizzle-orm ^0.30.4, postgres ^3.4.9, bcryptjs ^2.4.3)","spec seguridad-domain: supply chain; OWASP A06; ISO 27001 A.8.6",Open,TBD,Backlog
+
+# === Matriz OWASP Top 10 (2021) - Estado de verificacion ===
+# Nota: Verificado = auditable con evidencia estatica. No verificado = no se encontro evidencia de control o no se probo activamente en esta pasada.
+owasp_id,categoria,estado,criterio_spec,evidencia_o_gaps
+A01,Broken Access Control,Verificado (deficiente),spec seguridad-domain: RBAC y tenant isolation,F1 F3 F4 F5 F8
+A02,Cryptographic Failures,Verificado (deficiente),spec seguridad-domain: cifrado TLS at-rest en transito,F6 rejectUnauthorized:false
+A03,Injection,No verificado,spec seguridad-domain: requires prueba activa DAST/SAST,Drizzle ORM prepara statements; sin fuzzing realizado
+A04,Insecure Design,Verificado (deficiente),spec seguridad-domain: diseno seguro uploads y flujo auth,F2 F10 F11
+A05,Security Misconfiguration,Verificado (deficiente),spec seguridad-domain: secure defaults y headers,F7 F8 next.config.js sin CSP/HSTS
+A06,Vulnerable & Outdated Components,Parcialmente verificado,spec seguridad-domain: supply chain SBOM,F22 solo versiones sin npm audit/CVE pin
+A07,Identification & Auth Failures,Verificado (deficiente),spec seguridad-domain: ciclo identidad,F5 F10 F16
+A08,Software and Data Integrity Failures,Verificado (deficiente),spec backend-domain: idempotencia webhooks y KB poisoning,F3 F17
+A09,Security Logging and Monitoring Failures,Verificado (deficiente),spec seguridad-domain: logging persistente,F14 console.log
+A10,Server-Side Request Forgery (SSRF),No verificado,spec seguridad-domain: requiere revision de llamadas salientes con input usuario,No se identificaron sinks SSRF en pasada estatica; pendiente DAST
+
+# === Matriz de Privacidad (GDPR / LOPD-ES / CCPA) ===
+# Nota: Auditoria estatica preliminar - no se realizaron pruebas funcionales ni entrevistas con DPO.
+privacidad_dim,estado,evidencia_o_gaps,accion_recomendada
+base_legal,No verificado,no se encontro documento de base legal por finalidad (consent, contrato, interes legitimo),Definir registro de tratamientos con base legal por modulo
+consentimiento,No verificado,no se identifica mecanismo de captura y registro de consentimiento en leads ni chatbot,Implementar y persistir consent record con timestamp/IP
+RoPA (Registro Actividades Tratamiento),Inexistente,sin RoPA en /docs/seguridad ni /docs/adr,Elaborar RoPA conforme Art 30 GDPR
+DPIA (Evaluacion Impacto),Inexistente,sin DPIA pese a procesar datos juridicos sensibles via IA (leads.caseDescription, chatConversations, documents),Realizar DPIA obligatoria Art 35 GDPR antes de produccion
+retencion,No verificado,no se encontro politica ni job de retencion/eliminacion en schema ni cron,Definir plazos por tipo de dato y job DELETE programado
+derechos ARCO-PM (acceso rectificacion oposicion portabilidad),No verificado,sin endpoints /privacy/export /privacy/delete ni flujo 30 dias,Implementar junto a auth y tenant isolation
+transferencias internacionales,No verificado,uso de Google Gemini (US) sin TIA ni SCC documentados,Documentar TIA y SCC con Google LLC antes de activar AI en prod
+
+# === Aclaraciones de auditoria estatica preliminar ===
+# 1. Esta auditoria es ESTATICA PRELIMINAR: solo lectura de codigo y docs. Sin DAST/SAST funcional, sin pentesting, sin entrevistas DPO.
+# 2. NextAuth SI esta integrado (package.json:34 next-auth ^4.24.7; app/api/auth/[...nextauth]/auth-options.ts existe y funciona).
+#    Claim "Auth 0/100 NOT IMPLEMENTED" de SECURITY-AUDIT.md es OBSOLETO. Defecto real: propagacion incompleta (F5), no ausencia.
+# 3. Webhook MercadoPago SI verifica firma HMAC (app/api/payments/mp/webhook/route.ts:14 llama verifyMPWebhook y rechaza 401).
+#    Claim anterior "webhook MP sin verificacion de firma" es OBSOLETO. Gaps reales (F17): no actualiza estado, sin idempotencia por X-Request-Id.
+# 4. No afirmar "GET /api/leads anonimo": app/api/leads/route.ts:10 SI llama requireAuth y filtra por assignedTo=userId.
+#    Hallazgo real aplicable a leads es F4 (PATCH IDOR), no GET anónimo.
+# 5. Proveedores de pago activos en codigo: MercadoPago (mp) y Takenos. LemonSqueezy NO esta integrado (solo en .env.local como comentario
+#    y en planes obsoletos docs/superpowers/plans/2026-07-23-...). No referenciar LemonSqueezy como proveedor activo en documentacion nueva.
+# 6. Severidad unica: P0..P3, sin duplicados. IDs F1..F22 establecidos en audit previo y reconfirmados en esta pasada con evidencia actualizada.
+# === Revisión final implementación 2026-08-05 ===
+# F1 permanece bloqueante: POST chatbot no escopa la lectura/actualización por firmId.
+# F2 requiere evidencia de integración; F3-F5 quedan Confirmed Fixed por lectura estática + tests de helpers.
+# Build no verificado en verde: npm run build falla sin DB configurada al instanciar DrizzleAdapter con db={}.

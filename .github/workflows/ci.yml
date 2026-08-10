@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Least privilege: only read repo contents. No deploy tokens, no cloud
+# credentials, no secrets — this pipeline only proves the build is sound.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: lint + typecheck + test + build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      # Secret-safe placeholder env only. These values are NOT real secrets and
+      # intentionally never leave the workflow. They exist only so that any
+      # build-time code path that expects env presence does not throw. Real
+      # secrets are provisioned at runtime by the deploy platform (Vercel /
+      # Railway) and are NEVER placed in CI.
+      NEXT_PUBLIC_APP_URL: 'http://localhost:3000'
+      NEXTAUTH_URL: 'http://localhost:3000'
+      NEXTAUTH_SECRET: 'ci-placeholder-secret-not-used-in-prod'
+      # Database connection string. lib/db/index.ts reads
+      # `DATABASE_URL || POSTGRES_URL`, and Vercel may also expose
+      # POSTGRES_URL_NON_POOLING for migrations. All three are mirrored here in
+      # the same precedence order so any build-time code path that inspects DB
+      # env presence does not throw. These are NOT real secrets.
+      DATABASE_URL: 'postgresql://placeholder:placeholder@localhost:5432/placeholder'
+      POSTGRES_URL: 'postgresql://placeholder:placeholder@localhost:5432/placeholder'
+      POSTGRES_URL_NON_POOLING: 'postgresql://placeholder:placeholder@localhost:5432/placeholder'
+      NEXT_PUBLIC_SUPABASE_URL: 'https://placeholder.supabase.co'
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: 'ci-placeholder-anon-key'
+      SUPABASE_SERVICE_ROLE_KEY: 'ci-placeholder-service-role-key'
+      GOOGLE_API_KEY: 'ci-placeholder'
+      GOOGLE_CLIENT_ID: 'ci-placeholder'
+      GOOGLE_CLIENT_SECRET: 'ci-placeholder'
+      MP_ACCESS_TOKEN: 'ci-placeholder'
+      MP_WEBHOOK_SECRET: 'ci-placeholder'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      # Supply chain visibility: surface vulnerable transitive deps without
+      # blocking merge on pre-existing, low-severity advisories. Produces the
+      # full audit report in the run log. No secrets are required — npm audit
+      # only reads package-lock.json and the public npm registry.
+      - name: Dependency audit (high/critical)
+        continue-on-error: true
+        run: |
+          npm audit --omit=dev --audit-level=high
+          echo "::notice::npm audit completed; see log for advisory details"
+
+      - name: Dependency audit summary (moderate+)
+        if: always()
+        continue-on-error: true
+        run: npm audit --omit=dev --audit-level=moderate --json > audit-report.json || true
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-report
+          path: audit-report.json
+          if-no-files-found: ignore
+          retention-days: 7

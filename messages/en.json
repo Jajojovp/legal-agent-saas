@@ -1,0 +1,595 @@
+{
+  "common": {
+    "appName": "LegalAgent",
+    "tagline": "AI-Powered Growth for Modern Law Firms",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "viewAll": "View All",
+    "learnMore": "Learn More",
+    "getStarted": "Get Started",
+    "perMonth": "/month",
+    "perYear": "/year",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "savePercent": "Save {percent}%",
+    "popular": "MOST POPULAR",
+    "trustedBy": "Trusted by {count}+ Law Firms",
+    "noCreditCard": "No credit card required",
+    "setupMinutes": "Setup in 5 minutes",
+    "cancelAnytime": "Cancel anytime",
+    "language": "Language",
+    "english": "English",
+    "spanish": "Español"
+  },
+  "nav": {
+    "features": "Features",
+    "reviews": "Reviews",
+    "pricing": "Pricing",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "startTrial": "Start Free Trial",
+    "dashboard": "Dashboard",
+    "leads": "Leads",
+    "cases": "Cases",
+    "tasks": "Tasks",
+    "billing": "Billing",
+    "analytics": "Analytics",
+    "messages": "Messages",
+    "settings": "Settings",
+    "searchPlaceholder": "Search cases, clients, documents..."
+  },
+  "auth": {
+    "backToHome": "Back to website",
+    "login": "Sign In",
+    "register": "Create Account",
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Sign in to your LegalAgent account",
+    "registerTitle": "Start your free trial",
+    "registerSubtitle": "Create your account and start capturing more leads today",
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "fullName": "Full name",
+    "firmName": "Law firm name",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "orContinueWith": "Or continue with",
+    "signInGoogle": "Sign in with Google",
+    "trialInfo": "14-day free trial • No credit card required",
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "emailInUse": "An account with this email already exists",
+      "passwordMismatch": "Passwords do not match",
+      "weakPassword": "Password must be at least 8 characters"
+    }
+  },
+  "landing": {
+    "about": {
+      "badge": "Legal Intelligence",
+      "title1": "We are LegalAgent,",
+      "title2": "an AI-powered OS.",
+      "title3": "We automate cases, billing, and operations for modern law firms."
+    },
+    "hero": {
+      "badge": "Trusted by {count}+ Law Firms Across USA & Canada",
+      "title": "Turn Website Visitors Into",
+      "titleHighlight": "Paying Clients 24/7",
+      "subtitle": "AI-powered chatbot captures, qualifies, and converts leads while you focus on winning cases.",
+      "subtitleBold": "No credit card required. Setup in 5 minutes.",
+      "ctaPrimary": "Start Your Free Trial",
+      "ctaSecondary": "Watch 2-Min Demo"
+    },
+    "stats": {
+      "firms": "Active Law Firms",
+      "firmsValue": "500+",
+      "leads": "Leads Captured",
+      "leadsValue": "50K+",
+      "successRate": "Success Rate",
+      "successRateValue": "94%",
+      "satisfaction": "Client Satisfaction",
+      "satisfactionValue": "4.9/5"
+    },
+    "features": {
+      "title": "Everything Your Law Firm Needs",
+      "subtitle": "A complete practice management platform designed specifically for modern law firms",
+      "chatbot": {
+        "title": "24/7 AI Chatbot",
+        "description": "Capture and qualify leads automatically while you sleep. Never miss a potential client again."
+      },
+      "analytics": {
+        "title": "Smart Analytics",
+        "description": "Track KPIs, revenue trends, and practice performance with real-time dashboards."
+      },
+      "security": {
+        "title": "Secure & Compliant",
+        "description": "Bank-level encryption and full compliance with legal industry regulations."
+      },
+      "timeTracking": {
+        "title": "Time Tracking",
+        "description": "Automated billable hours tracking and invoicing. Get paid faster."
+      },
+      "crm": {
+        "title": "CRM & Case Management",
+        "description": "Manage clients, cases, and deadlines in one powerful platform."
+      },
+      "growth": {
+        "title": "Grow Your Practice",
+        "description": "AI-powered lead scoring helps you focus on high-value clients."
+      }
+    },
+    "testimonials": {
+      "badge": "Trust & Excellence",
+      "title": "What visionary firms say",
+      "subtitle": "See what attorneys are saying about LegalAgent",
+      "quote1": "LegalAgent completely transformed how we handle discovery and intake. The AI integration saves us around 15 hours a week.",
+      "role1": "Managing Partner, Jenkins & Co",
+      "quote2": "The automated billing and dual-currency support allowed us to seamlessly expand our practice across LATAM and the US.",
+      "role2": "Founder, Mendoza Legal",
+      "quote3": "It's rare to find a platform that feels this premium while delivering actual enterprise-grade power. Exceptional.",
+      "role3": "Senior Counsel"
+    },
+    "cta": {
+      "title": "Ready to Transform Your Practice?",
+      "subtitle": "Join {count}+ law firms using AI to capture more leads, win more cases, and grow faster.",
+      "subtitleBold": "Start your free 14-day trial today. No credit card required.",
+      "ctaPrimary": "Start Free Trial",
+      "ctaSecondary": "Schedule Demo",
+      "guarantee": "✓ 14-day free trial  |  ✓ No credit card required  |  ✓ Cancel anytime"
+    },
+    "footer": {
+      "description": "AI-powered practice management for modern law firms.",
+      "product": "Product",
+      "company": "Company",
+      "support": "Support",
+      "about": "About Us",
+      "contact": "Contact",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "helpCenter": "Help Center",
+      "liveChat": "Live Chat",
+      "emailSupport": "Email Support",
+      "scheduleDemo": "Schedule Demo",
+      "apiDocs": "API Docs",
+      "copyright": "© {year} LegalAgent. All rights reserved. Built with ❤️ for attorneys."
+    }
+  },
+  "pricing": {
+    "title": "Simple, Transparent Pricing",
+    "subtitle": "Choose the plan that fits your practice. All plans include a 14-day free trial.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "savePercent": "Save {percent}%",
+    "perMonth": "/month",
+    "popular": "Most Popular",
+    "freeTrial": "14-day free trial",
+    "noCard": "No credit card required",
+    "cta": "Start Free Trial",
+    "starter": {
+      "name": "Starter",
+      "subtitle": "For solo practitioners"
+    },
+    "professional": {
+      "name": "Professional",
+      "subtitle": "For growing firms"
+    },
+    "firm": {
+      "name": "Firm",
+      "subtitle": "For established practices"
+    },
+    "features": {
+      "attorney1": "1 attorney license",
+      "attorney3": "3 attorney licenses",
+      "attorney10": "10 attorney licenses",
+      "ai200": "200 AI queries/month",
+      "ai500": "500 AI queries/month",
+      "ai2000": "2,000 AI queries/month",
+      "crmBasic": "Basic CRM & case management",
+      "crmFull": "Full CRM & automation",
+      "billing": "Time tracking & billing",
+      "analytics": "Basic analytics",
+      "analyticsAdvanced": "Advanced analytics & reports",
+      "aiScoring": "AI lead scoring",
+      "support": "Email support",
+      "supportPriority": "Priority support",
+      "support247": "24/7 priority support",
+      "whiteLabel": "White-label chatbot",
+      "api": "API & custom integrations",
+      "manager": "Dedicated account manager"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": "Can I change plans later?",
+      "a1": "Yes, you can upgrade or downgrade at any time. Changes take effect at the start of your next billing cycle.",
+      "q2": "What payment methods do you accept?",
+      "a2": "We accept all major credit and debit cards through Takenos, powered by MercadoPago. Payments can be made in USD or local currency.",
+      "q3": "Is there a long-term contract?",
+      "a3": "No. All plans are month-to-month or annual. Cancel anytime with no penalties.",
+      "q4": "Can I try before I buy?",
+      "a4": "Absolutely. Every plan comes with a 14-day free trial. No credit card required to get started."
+    }
+  },
+  "sales": {
+    "hero": {
+      "badge": "ATTENTION: Law Firms Losing $15,000+/Month to These Issues",
+      "title": "You're Losing 6 Out of 10 Leads",
+      "titleHighlight": "Because You're Not Available 24/7",
+      "subtitle": "Most potential clients search for lawyers",
+      "subtitleHighlight": "after 6 PM and on weekends",
+      "subtitleEnd": ". If you're not there to respond instantly, they're calling your competitor.",
+      "calcTitle": "Calculate What You're Losing RIGHT NOW:",
+      "stat1Value": "60%",
+      "stat1Label": "of leads come after hours (industry average)",
+      "stat2Value": "$15K+",
+      "stat2Label": "lost revenue per month for typical firm",
+      "cta": "Stop Losing Leads - Start Free Trial"
+    },
+    "painPoints": {
+      "title": "4 Critical Problems Costing You $180K+/Year",
+      "subtitle": "And how LegalAgent solves each one automatically",
+      "problem": "Problem:",
+      "solution": "Solution:",
+      "impact": "Impact:",
+      "items": [
+        {
+          "problem": "Missing 60% of Leads After Hours",
+          "solution": "Our AI chatbot captures leads 24/7, even at 2 AM",
+          "impact": "+127% lead capture rate"
+        },
+        {
+          "problem": "15+ Hours/Week on Admin Work",
+          "solution": "Automated time tracking, billing & scheduling",
+          "impact": "Save $12,000/year per attorney"
+        },
+        {
+          "problem": "Average 45-Day Payment Delays",
+          "solution": "Instant invoicing with automated follow-ups",
+          "impact": "Get paid 28 days faster"
+        },
+        {
+          "problem": "20% Lead-to-Client Conversion",
+          "solution": "AI scoring prioritizes high-value leads",
+          "impact": "2.3x conversion rate increase"
+        }
+      ]
+    },
+    "howItWorks": {
+      "title": "How LegalAgent Captures Leads on Autopilot",
+      "subtitle": "Simple 4-step system that works while you sleep",
+      "steps": [
+        {
+          "title": "AI Captures Leads 24/7",
+          "description": "Chatbot qualifies visitors, books consultations, and collects contact info while you sleep.",
+          "result": "Never miss a potential client again",
+          "bullet1": "Qualifies web visitors instantly",
+          "bullet2": "Books consultations automatically",
+          "bullet3": "Collects contact information"
+        },
+        {
+          "title": "Smart Lead Scoring",
+          "description": "AI analyzes conversations and assigns 0-100 quality scores based on budget, urgency, and fit.",
+          "result": "Focus only on high-value cases",
+          "bullet1": "Analyzes case urgency",
+          "bullet2": "Filters low-value prospects",
+          "bullet3": "Notifies your team instantly"
+        },
+        {
+          "title": "Automated Follow-Up",
+          "description": "Email sequences nurture leads, remind about deadlines, and re-engage cold prospects.",
+          "result": "Recover 30% of abandoned leads"
+        },
+        {
+          "title": "Track & Get Paid Faster",
+          "description": "Automatic time tracking converts to invoices in 1-click. Integrated payment processing.",
+          "result": "Reduce outstanding AR by 40%",
+          "bullet1": "Automated time tracking",
+          "bullet2": "1-click invoicing",
+          "bullet3": "Global payment processing"
+        }
+      ]
+    },
+    "socialProof": {
+      "firmsValue": "847",
+      "firmsLabel": "Law Firms Using LegalAgent",
+      "leadsValue": "127%",
+      "leadsLabel": "Avg. Lead Increase (First 60 Days)",
+      "timeValue": "18hrs",
+      "timeLabel": "Saved Per Week Per Attorney",
+      "revenueValue": "$284K",
+      "revenueLabel": "Avg. Additional Revenue (Year 1)"
+    },
+    "comparison": {
+      "title": "Why LegalAgent is 10x Better Value",
+      "subtitle": "Compare us vs. legacy software charging 5-10x more",
+      "features": {
+        "ai": "AI-Powered Features",
+        "chatbot": "24/7 Lead Capture Chatbot",
+        "analytics": "Advanced Analytics",
+        "timeTracking": "Time Tracking & Billing"
+      }
+    },
+    "launchPricing": {
+      "title": "Special Launch Pricing — 50% OFF",
+      "lockPrice": "Lock in this price forever. No price increases. Ever.",
+      "spotsLeft": "Only {count} spots left at this price"
+    },
+    "guarantee": {
+      "title": "100% Risk-Free Guarantee",
+      "items": [
+        "14-day free trial — No credit card required",
+        "30-day money-back guarantee",
+        "Cancel anytime with 1-click",
+        "Keep all your data if you leave",
+        "99.9% uptime SLA guarantee"
+      ]
+    },
+    "finalCta": {
+      "title": "Ready to Stop Losing $15K+/Month?",
+      "subtitle": "Join {count} law firms capturing more leads, winning more cases, and growing faster with AI.",
+      "cta": "Start Your Free 14-Day Trial",
+      "info": "No credit card required • Setup in 5 minutes • Cancel anytime"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back! Here's what's happening with your practice.",
+    "kpi": {
+      "newLeads": "New Leads This Month",
+      "activeCases": "Active Cases",
+      "revenue": "Revenue This Month",
+      "billableHours": "Billable Hours",
+      "fromLastMonth": "{change} from last month"
+    },
+    "recentLeads": {
+      "title": "Recent Leads",
+      "subtitle": "Latest inquiries from your website"
+    },
+    "deadlines": {
+      "title": "Upcoming Deadlines",
+      "subtitle": "Tasks and deadlines requiring attention",
+      "dueIn": "Due in {time}"
+    },
+    "revenueBreakdown": {
+      "title": "Revenue by Practice Area",
+      "subtitle": "Monthly revenue breakdown"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "subtitle": "Common tasks and shortcuts",
+      "addLead": "Add New Lead",
+      "createCase": "Create New Case",
+      "generateInvoice": "Generate Invoice",
+      "viewCalendar": "View Calendar"
+    }
+  },
+  "leads": {
+    "title": "Leads",
+    "subtitle": "Manage inquiries and potential clients",
+    "export": "Export",
+    "newLead": "New Lead",
+    "search": "Search leads...",
+    "totalLeads": "Total Leads",
+    "newThisWeek": "New (This Week)",
+    "consultationsScheduled": "Consultations Scheduled",
+    "conversionRate": "Conversion Rate",
+    "all": "All",
+    "new": "New",
+    "contacted": "Contacted",
+    "qualified": "Qualified",
+    "score": "Score",
+    "unassigned": "Unassigned",
+    "email": "Email",
+    "convertToCase": "Convert to Case",
+    "noLeadsFound": "No leads found matching your criteria",
+    "websiteChat": "Website Chat",
+    "referral": "Referral",
+    "other": "Other"
+  },
+  "tasks": {
+    "title": "Tasks & Deadlines",
+    "subtitle": "Track and manage case deadlines and tasks",
+    "newTask": "New Task",
+    "search": "Search tasks...",
+    "pending": "Pending",
+    "all": "All",
+    "completed": "Completed",
+    "allPriority": "All Priority",
+    "urgent": "Urgent",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low",
+    "pendingTasks": "Pending Tasks",
+    "dueToday": "Due Today",
+    "overdue": "Overdue",
+    "thisWeek": "This Week",
+    "edit": "Edit",
+    "complete": "Complete",
+    "reopen": "Reopen",
+    "noTasksFound": "No tasks found",
+    "assignedTo": "Assigned to"
+  },
+  "billing": {
+    "title": "Billing & Invoices",
+    "subtitle": "Manage invoices and payment tracking",
+    "newInvoice": "New Invoice",
+    "export": "Export",
+    "all": "All",
+    "draft": "Draft",
+    "sent": "Sent",
+    "paid": "Paid",
+    "overdue": "Overdue",
+    "invoices": "Invoices",
+    "timeEntries": "Time Entries",
+    "totalBilled": "Total Billed",
+    "collected": "Collected",
+    "outstanding": "Outstanding",
+    "unbilledHours": "Unbilled Hours",
+    "unbilledValue": "Unbilled Value",
+    "paymentProgress": "Payment Progress",
+    "viewPdf": "View PDF",
+    "sendToClient": "Send to Client",
+    "recordPayment": "Record Payment",
+    "sendReminder": "Send Reminder",
+    "due": "Due",
+    "paidLabel": "paid",
+    "recentTimeEntries": "Recent Time Entries",
+    "addTimeEntry": "Add Time Entry",
+    "bill": "Bill",
+    "description": "Description",
+    "hours": "Hours",
+    "rate": "Rate",
+    "amount": "Amount",
+    "status": "Status",
+    "dueDate": "Due Date",
+    "invoiceNumber": "Invoice #",
+    "client": "Client",
+    "viewDetails": "View Details",
+    "markAsPaid": "Mark as Paid",
+    "totalOutstanding": "Total Outstanding",
+    "collectionRate": "Collection Rate"
+  },
+  "analytics": {
+    "title": "Analytics & Reports",
+    "subtitle": "Practice performance metrics and insights",
+    "revenue": "Revenue Trend",
+    "revenueSubtitle": "Monthly revenue and case volume over time",
+    "cases": "cases",
+    "leadFunnel": "Lead Conversion Funnel",
+    "leadFunnelSubtitle": "Visitor to client conversion rate",
+    "practicePerformance": "Practice Area Performance",
+    "practicePerformanceSubtitle": "Revenue, cases, and average value by practice area",
+    "kpiMetrics": "KPI Metrics",
+    "leadConversion": "Lead Conversion Rate",
+    "avgCaseValue": "Avg. Case Value",
+    "clientRetention": "Client Retention",
+    "billableHours": "Billable Hours",
+    "collectionRate": "Collection Rate",
+    "responseTime": "Response Time",
+    "exportReport": "Export Report",
+    "visitors": "Website Visitors",
+    "chatEngaged": "Chat Engaged",
+    "leadsCaptured": "Leads Captured",
+    "consultations": "Consultations",
+    "clients": "Clients",
+    "month": "Month",
+    "revenueLabel": "Revenue",
+    "casesLabel": "Cases",
+    "avgCaseValueLabel": "Avg. Case Value",
+    "totalCases": "Total Cases",
+    "pctOfRevenue": "% of Revenue",
+    "timeDistribution": "Time Distribution",
+    "timeDistributionSubtitle": "How your team spends billable hours",
+    "clientAcquisitionCost": "Client Acquisition Cost",
+    "clientAcquisitionCostSubtitle": "Marketing spend per new client by channel",
+    "perClient": "per client"
+  },
+  "messages": {
+    "title": "Messages",
+    "subtitle": "Chatbot conversations and lead interactions",
+    "totalConversations": "Total Conversations",
+    "newLeads": "New Leads",
+    "qualified": "Qualified",
+    "unread": "Unread",
+    "searchConversations": "Search conversations...",
+    "unknownVisitor": "Unknown Visitor",
+    "selectConversation": "Select a conversation to view",
+    "convertToLead": "Convert to Lead",
+    "createLeadFromConversation": "Create Lead from Conversation",
+    "downloadTranscript": "Download Transcript",
+    "newLeadStatus": "New Lead",
+    "abandoned": "Abandoned",
+    "converted": "Converted",
+    "justNow": "Just now",
+    "minutesAgo": "{minutes}m ago",
+    "hoursAgo": "{hours}h ago",
+    "daysAgo": "{days}d ago"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your firm's account and preferences",
+    "firmProfile": "Firm Profile",
+    "teamMembers": "Team Members",
+    "integrations": "Integrations",
+    "billingPlan": "Billing & Plans",
+    "notifications": "Notifications",
+    "security": "Security",
+    "updateFirmInfo": "Update your law firm's information",
+    "firmName": "Firm Name",
+    "contactEmail": "Contact Email",
+    "phone": "Phone",
+    "website": "Website",
+    "address": "Address",
+    "city": "City",
+    "state": "State",
+    "zipCode": "ZIP Code",
+    "practiceAreas": "Practice Areas",
+    "saveChanges": "Save Changes",
+    "manageTeam": "Manage attorneys and staff access",
+    "inviteMember": "Invite Member",
+    "active": "Active",
+    "manageIntegrations": "Connect third-party services to enhance your workflow",
+    "connected": "Connected",
+    "configure": "Configure",
+    "connect": "Connect",
+    "currentPlan": "Current Plan",
+    "currentPlanSubtitle": "You are currently on the Professional plan",
+    "professionalPlan": "Professional Plan",
+    "planDetails": "3 attorneys · 500 AI queries/month · Email automation",
+    "perMonth": "per month",
+    "nextBillingDate": "Next billing date",
+    "aiQueriesUsed": "AI queries used this month",
+    "changePlan": "Change Plan",
+    "cancelSubscription": "Cancel Subscription",
+    "paymentMethod": "Payment Method",
+    "update": "Update",
+    "notificationPreferences": "Notification Preferences",
+    "manageNotifications": "Manage how you receive updates and alerts",
+    "emailNotifications": "Email Notifications",
+    "smsNotifications": "SMS Notifications",
+    "savePreferences": "Save Preferences",
+    "password": "Password",
+    "updatePassword": "Update your password regularly for security",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "updatePasswordBtn": "Update Password",
+    "twoFactor": "Two-Factor Authentication",
+    "twoFactorSubtitle": "Add an extra layer of security to your account",
+    "twoFactorStatus": "2FA Status",
+    "twoFactorDisabled": "Two-factor authentication is disabled",
+    "enable2fa": "Enable 2FA",
+    "activeSessions": "Active Sessions",
+    "activeSessionsSubtitle": "Manage your active login sessions",
+    "current": "Current",
+    "revoke": "Revoke"
+  },
+  "chatbot": {
+    "greeting": "Hello! I'm the virtual assistant for {firmName}. I'm here to help answer your questions and connect you with an attorney. How can I assist you today?",
+    "placeholder": "Type your message...",
+    "disclaimer": "This chatbot provides general information only and does not constitute legal advice.",
+    "legalAssistant": "Legal Assistant",
+    "errorMessage": "I apologize, but I'm having trouble connecting right now. Please try again or call us directly.",
+    "processing": "Processing..."
+  },
+  "payment": {
+    "takenosBanner": "Powered by Takenos — Receive payments in USD",
+    "takenosDesc": "Secure international payments for Latin America",
+    "acceptedCards": "Visa, Mastercard, AMEX accepted",
+    "processor": "Processed by Takenos & MercadoPago",
+    "secure": "256-bit SSL encrypted payment",
+    "startTrial": "Start 14-Day Free Trial",
+    "processing": "Processing...",
+    "errorTitle": "Payment Error",
+    "errorMessage": "Please check your payment details and try again.",
+    "genericError": "Connection error. Please try again."
+  }
+}
