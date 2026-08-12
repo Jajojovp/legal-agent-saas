@@ -1,937 +1,137 @@
-# 🔒 SEGURIDAD - INFORME COMPLETO
+# SECURITY-AUDIT — Auditoría de seguridad (Phase 0 Repository Capability Audit)
 
-## **Security Audit & Vulnerability Assessment Report**
+- **Fecha de auditoría:** 2026-08-11
+- **Alcance:** repositorio local `legal-agent-saas` commit `11bc4ca`. Auditoría estática de solo lectura sobre código + configuración + tests. **Sin** pentest dinámico, sin DAST/SAST ejecutado, sin acceso a la app desplegada, sin lectura de `.env.local`.
+- **Clasificación:** CONFIDENTIAL
+- **Verificación de calidad fresca (2026-08-11, dos corridas en el mismo checkout):**
+  - **Corrida A (orquestador):** `npm test` → **12 suites / 70 tests pasan**; Vitest reporta **3 unhandled errors** por timeout `fetch ["/@vite/env","ssr"]`; **salida global no limpia**. `npm run lint` → exit 0 / ~33 warnings `no-console`. `npm run build` → **compila** (route table generado) pero **no se observó exit 0**: excedió 300000 ms antes del cierre; registra `DATABASE_URL not configured`, `Dynamic server usage`, `Get cases error`, `Get tasks error`, `Dashboard KPI error`.
+  - **Corrida B (cierre Phase 0):** `npm test -- --reporter=dot --testTimeout=30000` → **15 suites / 113 tests pasan**, 0 fallos, 0 unhandled errors, duración *esta máquina* **42.84 s** (job `auth-options.test.ts` ~7.89 s). Lint/typecheck idénticos. Build no se re-ejecutó.
+  - **La divergencia es el hallazgo:** la suite es flaky. **No se afirma "tests estables" ni "build limpio"**. La cifra 113 sólo se cita porque se ejecutó y confirmó; la cifra 70 también se observó.
+  - Detalle en `CURRENT_STATE.md` §2, `TECH_DEBT.md` TD-15/TD-19 y `docs/release/2026-08-11-phase0-final-review.md` §8.
+- **Control regimes:** cada control citado seclasifica en la §2/§3 como *Declarado*, *Cableado*, *Proven* (con test) / *No Proven*. La §3 lista explícitamente los declarados no cableados. **No se declara production-ready**.
+- **Este documento reemplaza** la auditoría previa `SECURITY-AUDIT.md` v3.0 (fecha 2024-04-22) porque contenía **claims obsoletos** (ver §6 Histórico y `docs/audit/findings-tracker.csv` para la reconciliación). El histórico se conserva y referencia en §6; no se borra información sin justificar — cada claim antiguo se marca como SUPERSEDED con casos de evidencia.
 
-**Date:** April 22, 2024  
-**Application:** LegalAgent SaaS Platform  
-**Version:** 3.0  
-**Classification:** CONFIDENTIAL  
-
----
-
-## ✅ EXECUTIVE SUMMARY
-
-### **Security Status: PRODUCTION READY**
-
-**Overall Security Score: 92/100**
-
-✅ **Protected Against:**
-- SQL Injection (100%)
-- XSS Attacks (95%)
-- DDoS Attacks (90%)
-- CSRF Attacks (100%)
-- Data Breaches (98%)
-
-⚠️ **Areas for Improvement:**
-- Rate limiting (use Redis in production)
-- WAF implementation (Cloudflare)
-- Penetration testing
-- SOC 2 certification
+> **Advertencia de honestidad (énfasis visión §56/§120):** la auditoría distingue entre *control declarado*, *control cableado* y *control probado*. No se aceptan afirmaciones por puntuación. Aquí no hay “score 92/100”; hay hallazgos con evidencia y gap con tests pendientes.
 
 ---
 
-## 🛡️ VULNERABILIDADES EVALUADAS Y CORREGIDAS
+## 1. Hallazgos confirmados
 
-### **1. SQL INJECTION (SQLi)**
+Se numeran con `S-` para diferenciar de los `F-` del tracker previo. Donde un `F-` se reconcilia, se referencia.
 
-#### **Status: ✅ PROTECTED (100%)**
+| ID | Severidad | Categoría OWASP | Hallazgo | Evidencia (path:line) | Estado vs tracker previo |
+|---|---|---|---|---|---|
+| S-1 | P0 | A01 Broken Access Control | **CSRF declarado 100% pero `validateCSRFToken` no se invoca en ninguna ruta.** | `lib/security/middleware.ts:61-68` definición; grep `app/**` sin hits. | Confirma **F9** (Open). |
+| S-2 | P0 | A05 Security Misconfiguration | `addSecurityHeaders` definido en `lib/security/middleware.ts:161` **nunca llamado**; los headers reales viven en `next.config.js:22-55` (parcialmente correctos). Código muerto que induce confianza falsa. | `lib/security/middleware.ts:161-198` (sin callers) vs `next.config.js:22-55`. | Confirma **F7** parcial (realidad: headers sí aplicados por next.config; el problema es la duplicación muerta). |
+| S-3 | P1 | A09 Logging Failures | `logSecurityEvent` solo `console.log` y **no persistente**; no existe tabla `audit_logs` en `schema.ts`. | `lib/security/middleware.ts:293-298`; `lib/db/schema.ts` (sin audit_logs). | Confirma **F14** (Open). |
+| S-4 | P1 | A01 Broken Access Control | `validateFileUpload` confía en `file.type` (client-controlled); sin magic-byte check ni virus scan; y **no se invoca** desde `analyze-document` (que opera sobre `documentText`). | `lib/security/middleware.ts:240-279`; `app/api/ai/analyze-document/route.ts`. | Confirma **F11** (Open). |
+| S-5 | P1 | A07 Auth Failures | Registro **auto-eleva** `role='owner'` sin verificación de email, sin rate-limit, sin password policy enforced explícitamente en la ruta. | `app/api/auth/register/route.ts:38-46` (`role: 'owner'`); sin rate-limit ni verify. | Confirma **F10/F15** (Open). |
+| S-6 | P1 | A07 Auth Failures | JWT `maxAge: 30d` sin refresh ni revocación; `isActive` solo se valida en sign-in, no en cada petición. | `auth-options.ts:99-119`; nota follow-up `P0-AUTH-FIXES.md:226-228`. | Confirma **F16** (Open). |
+| S-7 | P2 | A02 Crypto Failures | TLS de Postgres se puede deshabilitar en no-prod (`DB_SSL_REJECT_UNAUTHORIZED=false`). Aceptable para dev; riesgo si la bandera se filtra a prod. | `lib/db/index.ts:6-18`. | Confirma **F6** (Open). |
+| S-8 | P2 | A05 / A07 | Rate limiting **in-memory** no distribuido: se rompe con multi-instancia serverless (Vercel). | `lib/security/middleware.ts:4`, `app/api/chatbot/message/route.ts:22-39`. | Confirma **F12** (Open). |
+| S-9 | P2 | A09 Logging Failures | `console.error`/`console.log` en rutas puede loguear stacks con PII o secretos; sin sanitización. | `app/api/auth/register/route.ts:56`, `app/api/payments/mp/webhook/route.ts:28`, `app/api/chatbot/message/route.ts`, `lib/ai/legal-ai-service.ts:115/119/125`. | Confirma **F18** (Open). |
+| S-10 | P3 | A07 Secret Mgmt | `validateAPIKey` solo valida prefijo+longitud; sin persistencia/rotación. | `lib/security/middleware.ts:203-208`. | Confirma **F19** (Open). |
+| S-11 | P3 | A06 Supply Chain | Dependencias con rango `^` suelto, sin SBOM, sin `npm audit` como **gate** (CI usa `continue-on-error`). | `package.json:21-45`, `.github/workflows/ci.yml:80-88`. | Confirma **F22** (Open). |
+| S-12 | P3 | A08 Integrity | Knowledge base **en memoria** no persistida y substitute de RAG; el aislamiento por tenant actual es por firma de interfaz, no por RLS sobre knowledge. | `lib/ai/knowledge-base.ts:14` (`Map`); sin tabla `knowledge_*` ni RLS. | Refuerza **F3**: el GET/POST KB está auth-gated, pero el almacén respalda nada. |
+| S-13 | P3 | Privacy | Sin DPIA pese a procesar datos jurídicos sensibles (PII en leads, chat, documents) vía IA en EEUU (Google Gemini). Sin RoPA, sin consent capture, sin retención, sin endpoints ARCO-PM, sin TIA/SCC. | `docs/audit/findings-tracker.csv` matriz privacidad; `lib/email`/`leads`/`chat` almacenan PII. | Confirma matriz privacidad (Open). |
 
-**Medidas Implementadas:**
+### 1.1 Hallazgos RESUELTOS confirmados contra código (no reclamar como nuevos)
 
-**A) Drizzle ORM con Parameterized Queries**
+| Ítem P0 | Confirmado resuelto | Evidencia |
+|---|---|---|
+| Auth context + `requireAuth` (`F5`) | **Sí** | `lib/auth/context.ts`, `lib/auth/session.ts:20`, `auth-options.ts:108-119`; tests `tests/auth/{context,flow,authorization,chatbot-scope}.test.ts` (113 tests pasan). |
+| Dashboard gate (`F8 parcial`) | **Sí** (gate de cookie) | `middleware.ts:19-34`, `lib/auth/dashboard-gate.ts`, `tests/auth/dashboard-gate.test.ts` (12 tests). |
+| KB / analyze-document auth + firmId from context (`F3`/`F2 parcial`) | **Sí (auth)** — storage/parseo siguen siendo stubs | `app/api/ai/knowledge/route.ts:4,19,25,33,58`, `app/api/ai/analyze-document/route.ts:8`. |
+| PATCH leads / qualify tenant + ownership (`F4`) | **Sí** | `app/api/leads/route.ts:79-134`, `app/api/leads/qualify/route.ts`; `canModifyLead` + `WHERE eq(id),eq(firmId)`. |
+| Webhook MP firma + idempotencia + state (`F17`) | **Sí (sustancial)** — reconcilia reclamo “sin idempotencia” | `app/api/payments/mp/webhook/route.ts:13-22` (`verifyMPWebhook`), `lib/payments/webhook-service.ts`, `lib/payments/repository.ts:17-43` (`claimPaymentEvent` with `onConflictDoNothing` + reclaim failed), `applySubscriptionState`. |
+| Chatbot internal mode gated + IDOR firma (`F1`) | **Sí** | `app/api/chatbot/message/route.ts:78-118` (`isInternalModeAllowed`, `resolveChatFirmId`, `canPersistConversation`, lookup `and(eq(sessionId),eq(firmId))`). |
 
-Drizzle ORM automáticamente previene SQL injection usando prepared statements.
-
-```typescript
-// ❌ VULNERABLE (string concatenation):
-const query = `SELECT * FROM users WHERE email = '${userInput}'`;
-
-// ✅ SEGURO (parameterized query con Drizzle):
-const users = await db
-  .select()
-  .from(users)
-  .where(eq(users.email, userInput)); // Safe!
-```
-
-**Cómo funciona:**
-```sql
--- Drizzle convierte esto:
-.where(eq(users.email, userInput))
-
--- En esto (prepared statement):
-SELECT * FROM users WHERE email = $1
--- Con parámetro: ['user@example.com']
-
--- El database engine escapa automáticamente
--- Incluso si userInput = "'; DROP TABLE users; --"
--- Se trata como string literal, no como SQL
-```
-
-**B) Input Sanitization (Defense in Depth)**
-
-```typescript
-import { sanitizeInput } from '@/lib/security/middleware';
-
-// Antes de usar cualquier user input:
-const safeEmail = sanitizeInput(req.body.email);
-
-// sanitizeInput() remueve:
-// - Quotes: ' " 
-// - Semicolons: ;
-// - SQL comments: -- /* */
-// - Dangerous keywords: xp_ sp_ exec
-```
-
-**Testing:**
-
-```typescript
-// Test de inyección SQL:
-const maliciousInputs = [
-  "admin' OR '1'='1",
-  "'; DROP TABLE users; --",
-  "1' UNION SELECT * FROM passwords--",
-  "admin'/*",
-];
-
-for (const input of maliciousInputs) {
-  const result = await db
-    .select()
-    .from(users)
-    .where(eq(users.email, input));
-  
-  // ✅ Returns empty array (no injection)
-  // ❌ Does NOT drop tables or leak data
-}
-```
-
-**Result:** ✅ **100% Protection**
+> **S-14:** reclamar `F1` como *blocker* en `findings-tracker.csv:62` está obsoleto; el POST chatbot hoy scopea lectura/update por `sessionId AND firmId` (`route.ts:101-118`). Se recomienda mover F1 a *Confirmed Fixed* en el tracker.
 
 ---
 
-### **2. CROSS-SITE SCRIPTING (XSS)**
+## 2. Controles existentes (cableados y provados)
 
-#### **Status: ✅ PROTECTED (95%)**
+| Control | Cableado | Proado | Evidencia |
+|---|---|---|---|
+| Authentication (Credentials + bcrypt 12 + JWT) | ✅ | ✅ unit | `auth-options.ts:41-102`, `tests/auth/{auth-options,flow}.test.ts` |
+| Auth context firmId/role/isActive | ✅ | ✅ unit | `lib/auth/context.ts`, `tests/auth/context.test.ts` (13) |
+| Tenant RLS por transacción (fail-closed) | ✅ | ✅ unit (helper) | `lib/db/tenant-context.ts:20-26`, `tests/db/{tenant-context,rls-migration,tenant-route-contract}.test.ts` |
+| `firmId` siempre del contexto (no body) | ✅ | ✅ unit | `lib/auth/authorization.ts:51,118`, `tests/auth/authorization.test.ts` |
+| Ownership + tenant en PATCH leads | ✅ | ✅ unit | `app/api/leads/route.ts:79-134`, `tests/auth/authorization.test.ts:22` |
+| Dashboard cookie gate (edge) | ✅ | ✅ unit | `middleware.ts`, `tests/auth/dashboard-gate.test.ts` (12) |
+| Security headers (CSP/HSTS/X-Frame/nosniff/Referrer/Permissions/COOP) | ✅ (next.config) | ❌ no header test | `next.config.js:22-55` |
+| MP webhook HMAC-SHA256 + constant-time compare | ✅ | ✅ unit (contracts) | `lib/payments/mercadopago.ts:122-151`, `tests/payments/{contracts,webhook-service,subscription-state}.test.ts` |
+| Payment idempotency + state reconciliation | ✅ | ✅ unit (service) | `lib/payments/{webhook-service,repository,subscription-state}.test.ts` (12) |
+| Chatbot internal-mode + public anonymous firm 1 | ✅ | ✅ unit | `tests/auth/chatbot-scope.test.ts` (14), `tests/chatbot/public-session.test.ts` (8) |
+| Zod validation en rutas críticas | ✅ | parcial | `lib/validations.ts`, `app/api/leads/route.ts:42`, `app/api/auth/register/route.ts:10` |
 
-**Medidas Implementadas:**
+## 3. Controles declarados pero NO cableados (deuda)
 
-**A) HTML Sanitization**
+| Control | Definido en | Cableado | Acción |
+|---|---|---|---|
+| `validateCSRFToken` | `lib/security/middleware.ts:61` | ❌ nunca llamado | Cablear en rutas mutativas **o** documentar que la API JSON SameSite no requiere doble-submit y eliminar el stub. |
+| `addSecurityHeaders` | `lib/security/middleware.ts:161` | ❌ nunca llamado | Eliminar (duplica next.config). |
+| `logSecurityEvent` / `audit_logs` | `lib/security/middleware.ts:293` | ❌ console.log only | Introducir tabla `audit_logs` + writer persistente (P1). |
+| `validateFileUpload` | `lib/security/middleware.ts:240` | ❌ no usado en analyze-document | Cablear cuando se introduzca storage real. |
+| `sanitizeInput`/`sanitizeHTML` | `lib/security/middleware.ts:73/91` | uso parcial no verificado | Validar uso en rutas; Drizzle cubre SQLi via prepared statements. |
+| `validateAPIKey` | `lib/security/middleware.ts:203` | ❌ sin API pública todavía | Revisar cuando se introduzca `/api/v1`. |
 
-```typescript
-import { sanitizeHTML } from '@/lib/security/middleware';
+## 4. Tests pendientes (no provados en esta auditoría)
 
-// Antes de renderizar user content:
-const safeContent = sanitizeHTML(userMessage);
+- **Integration tests** de route handlers con fake DB (solo helpers puros hoy).
+- **RLS negative tests en staging**: `supabase-init.sql:6` referencia `tests/db/rls-negative.sql` que **no existe** en el repo (solo `rls-migration.test.ts`).
+- **E2E** de flujos críticos (register → login → create lead → qualify → payment).
+- **Concurrency test** del path `claimPaymentEvent` (reclaim de `failed`) — `repository.ts:27-35`.
+- **Header/CSP test** automatizado.
+- **Fuzzing / DAST** de endpoints (A03 injection sin probar activamente — Drizzle prepared statements son mitigación, no prueba).
+- **SSRF review** de llamadas salientes con input usuario (A10: `mercadopago.ts` usa IDs controlados; Gemini usa prompts con texto de usuario → revisar prompt-injection).
+- **AI red-team**: prompt-injection sobre chatbot y `analyzeDocument` (texto del usuario entra directo al prompt).
+- **Secrets scan** del git history (no se ejecutó; `.env.local` presente en workspace pero `.gitignore` correcto).
 
-// sanitizeHTML() convierte:
-// <script>alert('XSS')</script>
-// En:
-// &lt;script&gt;alert('XSS')&lt;/script&gt;
+## 5. Riesgos residuales y prioridades
 
-// Characters escaped:
-const entityMap = {
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;',
-  '"': '&quot;',
-  "'": '&#x27;',
-  '/': '&#x2F;',
-};
-```
+1. **P0 (bloqueante pre-prod):** S-1 (CSRF), S-2 (código muerto de seguridad), S-3 (audit log), S-5 (registro frágil). Estos crean **confianza falsa** y vacío de trazabilidad.
+2. **P1:** S-4 (uploads), S-6 (session life), S-8 (rate limit distribuido), S-9 (logs con PII), observability.
+3. **P2:** S-7 (TLS flag), S-12 (KB/RAG isolation por RLS real), S-13 (privacy: DPIA/RoPA/consent/ARCO-PM/TIA).
+4. **P3+:** S-10, S-11, integraciones enterprise.
 
-**B) React Auto-Escaping**
+## 6. Histórico (preservado y reconciliado)
 
-React automáticamente escapa content por default:
+### 6.1 `SECURITY-AUDIT.md` v3.0 — 2024-04-22 — SUPERSEDED
 
-```typescript
-// ✅ SEGURO (React escapes automatically):
-<div>{userInput}</div>
+La auditoría raíz previa afirmaba (resumen, con reconciliación al 2026-08-11):
 
-// ⚠️ PELIGROSO (bypasses escaping):
-<div dangerouslySetInnerHTML={{__html: userInput}} />
-// ^ Nunca usar con user input sin sanitizar
-```
+| Claim v3.0 (2024-04-22) | Estado real 2026-08-11 | Acción |
+|---|---|---|
+| “Overall 92/100, Production Ready” | **No avalado** — sin pentest ni evidencia; control de production readiness no procede de un score autoasignado. | Desestimado como claim vinculante. |
+| “SQL Injection 100% (Drizzle)” | Drizzle usa prepared statements (`db.client = postgres(...)`, `drizzle`). Sin fuzzing. | Mitigación presente; **no probado**. |
+| “XSS 95% (sanitizeHTML + CSP)” | `sanitizeHTML` defined; CSP en next.config aplica. React auto-escapea. `dangerouslySetInnerHTML` usage no verificado. | Parcialmente respaldado. |
+| “CSRF 100% (token validation)” | **Falso hoy** — `validateCSRFToken` nunca invocado (S-1). | Marcar **SUPERSEDED**; corrige en S-1. |
+| “Auth 0/100 NOT IMPLEMENTED” | **Falso hoy** — NextAuth implementado con Credentials + Google opcional + JWT context. | Marcar **SUPERSEDED**; ver §1.1. |
+| “File Upload 100% implemented” | **Falso** — `validateFileUpload` no se usa; analyze-document recibe `documentText`. | Marcar **SUPERSEDED**; corrige en S-4. |
+| “Security Headers 100%” | Parcialmente respaldado por `next.config.js:22-55`. | Mantener; eliminar duplicado muerto (S-2). |
+| “Data Encryption 98%, DB encryption at rest” | TLS configurable; at-rest depende de Supabase (no verificado aquí). | No avalado; requerir evidencia del proveedor. |
+| “GDPR/CCPA compliant” | **No verificado** — ver S-13 (privacy matrix). | Marcar **SUPERSEDED**. |
+| “SOC 2 in progress / HIPAA ready” | **No verificado**. | Desestimar hasta evidencia formal. |
 
-**C) Content Security Policy (CSP)**
+> El histórico v3.0 íntegro no se reescribe aquí; queda referenciado en git history. Esta sección reemplaza sus afirmaciones vinculantes conforme al principio de no borrar sin justificar (cada item tiene caso de evidencia y acción).
 
-```typescript
-// Headers aplicados en todas las responses:
-response.headers.set(
-  'Content-Security-Policy',
-  "default-src 'self'; " +
-  "script-src 'self' 'unsafe-inline' https://js.stripe.com; " +
-  "style-src 'self' 'unsafe-inline'; " +
-  "img-src 'self' data: https: blob:;"
-);
+### 6.2 `docs/audit/findings-tracker.csv` — 2026-08-05 — vigente (referenciado)
 
-// Esto previene:
-// - Inline scripts no autorizados
-// - External scripts maliciosos
-// - XSS via script injection
-```
+Auditoría estática previa con `F1..F22`, matriz OWASP y matriz privacidad. Se conserva como anexo histórico de seguridad. Reconciliación con esta auditoría:
+- **Confirmados Fixed (reconciliados a código):** F3, F4, F5, F1 (POST chatbot), F17 (webhook idempotencia).
+- **Open sostenidos:** F6, F7, F8, F9, F10, F11, F12, F14, F15, F16, F18, F19, F20, F21, F22.
+- **Re marker de los claims de `SECURITY-AUDIT.md` v3.0:** F13 (mantener).
 
-**Testing:**
+### 6.3 `docs/audit/P0-AUTH-FIXES.md` — 2026-08-05 — vigente
 
-```typescript
-// Test de XSS:
-const xssPayloads = [
-  "<script>alert('XSS')</script>",
-  "<img src=x onerror=alert('XSS')>",
-  "<svg/onload=alert('XSS')>",
-  "javascript:alert('XSS')",
-  "<iframe src='javascript:alert(XSS)'>",
-];
-
-for (const payload of xssPayloads) {
-  const safe = sanitizeHTML(payload);
-  // ✅ All dangerous chars escaped
-  // ❌ Script does NOT execute
-}
-```
-
-**Result:** ✅ **95% Protection**
-
-*5% gap: Algunos edge cases con atributos HTML. Mitigado con CSP.*
+Resumen de hardening P0-001..P0-005. Sigue siendo la fuente primaria de *qué se hizo* en auth. Esta auditoría lo reconfirma y amplía con el estado de pagos (F17).
 
 ---
 
-### **3. DDoS ATTACKS (Distributed Denial of Service)**
-
-#### **Status: ✅ PROTECTED (90%)**
-
-**Medidas Implementadas:**
-
-**A) Rate Limiting per IP**
-
-```typescript
-import { rateLimit, getClientIP } from '@/lib/security/middleware';
-
-export async function POST(request: NextRequest) {
-  const clientIP = getClientIP(request);
-  
-  // Limit: 20 requests per minute
-  const result = rateLimit(`chatbot-${clientIP}`, 20, 60000);
-  
-  if (!result.success) {
-    return NextResponse.json(
-      { error: 'Too many requests' },
-      { 
-        status: 429,
-        headers: {
-          'Retry-After': '60',
-          'X-RateLimit-Remaining': '0'
-        }
-      }
-    );
-  }
-  
-  // Process request...
-}
-```
-
-**Limits por Endpoint:**
-
-```typescript
-// Chatbot API: 20 req/min
-rateLimit(`chatbot-${ip}`, 20, 60000)
-
-// Lead capture: 10 req/min
-rateLimit(`leads-${ip}`, 10, 60000)
-
-// Auth login: 5 req/min
-rateLimit(`auth-${ip}`, 5, 60000)
-
-// Password reset: 3 req/10min
-rateLimit(`reset-${ip}`, 3, 600000)
-```
-
-**B) In-Memory Rate Limiter**
-
-```typescript
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-
-export function rateLimit(
-  identifier: string,
-  limit: number = 100,
-  windowMs: number = 60000
-): { success: boolean; remaining: number } {
-  const now = Date.now();
-  const record = rateLimitMap.get(identifier);
-
-  // Cleanup expired entries
-  if (record && now > record.resetTime) {
-    rateLimitMap.delete(identifier);
-  }
-
-  const current = rateLimitMap.get(identifier);
-
-  if (!current) {
-    // First request in window
-    rateLimitMap.set(identifier, {
-      count: 1,
-      resetTime: now + windowMs,
-    });
-    return { success: true, remaining: limit - 1 };
-  }
-
-  if (current.count >= limit) {
-    // Limit exceeded
-    return { success: false, remaining: 0 };
-  }
-
-  // Increment count
-  current.count++;
-  return { success: true, remaining: limit - current.count };
-}
-```
-
-**C) Get Real Client IP**
-
-```typescript
-export function getClientIP(request: NextRequest): string {
-  // Check X-Forwarded-For (behind proxy/CDN)
-  const forwarded = request.headers.get('x-forwarded-for');
-  if (forwarded) {
-    return forwarded.split(',')[0].trim();
-  }
-  
-  // Check X-Real-IP
-  const realIp = request.headers.get('x-real-ip');
-  if (realIp) {
-    return realIp;
-  }
-  
-  return 'unknown';
-}
-```
-
-**Limitaciones Actuales:**
-
-⚠️ **In-Memory Storage:**
-- ❌ No persiste entre server restarts
-- ❌ No funciona en múltiples instancias
-- ❌ Memory leak si muchos IPs
-
-✅ **Solución para Producción:**
-
-```bash
-# Usar Redis:
-npm install ioredis
-
-# Reemplazar Map con Redis:
-const redis = new Redis(process.env.REDIS_URL);
-
-export async function rateLimit(identifier: string, limit: number) {
-  const count = await redis.incr(identifier);
-  if (count === 1) {
-    await redis.expire(identifier, 60); // 60 seconds
-  }
-  return { success: count <= limit, remaining: limit - count };
-}
-```
-
-**D) Vercel Built-in DDoS Protection**
-
-Vercel automáticamente provee:
-- ✅ Edge network (distributed)
-- ✅ Auto-scaling
-- ✅ Traffic shaping
-- ✅ Anomaly detection
-
-**Testing:**
-
-```bash
-# Stress test con Apache Bench:
-ab -n 1000 -c 100 https://yourapp.com/api/chatbot/message
-
-# Expected:
-# First 20 requests: 200 OK
-# Next 980 requests: 429 Too Many Requests
-# ✅ Rate limit working
-```
-
-**Result:** ✅ **90% Protection**
-
-*10% gap: Usar Redis en producción para 100% distributed rate limiting.*
-
----
-
-### **4. CSRF (Cross-Site Request Forgery)**
-
-#### **Status: ✅ PROTECTED (100%)**
-
-**Medidas Implementadas:**
-
-**A) CSRF Token Validation**
-
-```typescript
-export function validateCSRFToken(request: NextRequest): boolean {
-  const token = request.headers.get('x-csrf-token');
-  const cookie = request.cookies.get('csrf-token')?.value;
-  
-  // Both must exist and match
-  return !!(token && cookie && token === cookie);
-}
-
-// En API routes protegidas:
-export async function POST(request: NextRequest) {
-  if (!validateCSRFToken(request)) {
-    return NextResponse.json(
-      { error: 'Invalid CSRF token' },
-      { status: 403 }
-    );
-  }
-  
-  // Process request...
-}
-```
-
-**B) SameSite Cookies**
-
-```typescript
-// Set-Cookie header:
-Set-Cookie: session=abc123; SameSite=Strict; Secure; HttpOnly
-
-// SameSite=Strict prevents:
-// - Cross-site request forgery
-// - CSRF attacks from external sites
-```
-
-**C) Double Submit Cookie Pattern**
-
-```typescript
-// 1. Server genera token y lo envía:
-const csrfToken = generateRandomToken();
-res.cookie('csrf-token', csrfToken, { 
-  httpOnly: false, // JS needs to read it
-  sameSite: 'strict',
-  secure: true
-});
-
-// 2. Client lo incluye en header:
-fetch('/api/endpoint', {
-  method: 'POST',
-  headers: {
-    'X-CSRF-Token': getCookie('csrf-token')
-  }
-});
-
-// 3. Server valida que coincidan
-```
-
-**Testing:**
-
-```bash
-# Intento de CSRF attack:
-curl -X POST https://yourapp.com/api/payment \
-  -H "Cookie: session=stolen_cookie" \
-  # Sin CSRF token
-
-# Expected:
-# 403 Forbidden - Invalid CSRF token
-# ✅ Attack blocked
-```
-
-**Result:** ✅ **100% Protection**
-
----
-
-### **5. AUTHENTICATION & SESSION MANAGEMENT**
-
-#### **Status: ⚠️ NOT YET IMPLEMENTED**
-
-**Recomendaciones:**
-
-**A) NextAuth.js Implementation**
-
-```bash
-npm install next-auth
-```
-
-```typescript
-// app/api/auth/[...nextauth]/route.ts
-import NextAuth from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import { compare } from 'bcrypt';
-
-export const authOptions = {
-  providers: [
-    CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
-      },
-      async authorize(credentials) {
-        const user = await db
-          .select()
-          .from(users)
-          .where(eq(users.email, credentials.email))
-          .limit(1);
-
-        if (!user || !user.passwordHash) {
-          return null;
-        }
-
-        const isValid = await compare(
-          credentials.password,
-          user.passwordHash
-        );
-
-        if (!isValid) {
-          return null;
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-        };
-      }
-    })
-  ],
-  session: {
-    strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
-  pages: {
-    signIn: '/login',
-    signOut: '/logout',
-    error: '/error',
-  },
-};
-
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
-```
-
-**B) Password Hashing con bcrypt**
-
-```typescript
-import { hash, compare } from 'bcrypt';
-
-// Al crear usuario:
-const passwordHash = await hash(password, 12); // 12 rounds
-
-// Al verificar:
-const isValid = await compare(inputPassword, user.passwordHash);
-```
-
-**C) Strong Password Policy**
-
-```typescript
-import { isStrongPassword } from '@/lib/security/middleware';
-
-const validation = isStrongPassword(password);
-
-if (!validation.valid) {
-  return {
-    error: validation.errors.join(', ')
-  };
-}
-
-// Requirements:
-// - Min 8 characters
-// - 1 uppercase letter
-// - 1 lowercase letter
-// - 1 number
-// - 1 special character
-```
-
-**D) Session Management**
-
-```typescript
-// JWT tokens con short expiry:
-{
-  user: { id, email, name },
-  exp: Date.now() + (15 * 60 * 1000), // 15 min
-  iat: Date.now()
-}
-
-// Refresh tokens:
-{
-  userId: id,
-  exp: Date.now() + (30 * 24 * 60 * 60 * 1000), // 30 days
-  type: 'refresh'
-}
-```
-
----
-
-### **6. DATA ENCRYPTION**
-
-#### **Status: ✅ IMPLEMENTED (98%)**
-
-**Measures:**
-
-**A) HTTPS / TLS**
-
-```typescript
-// Vercel automatically provides:
-// - TLS 1.3 encryption
-// - Auto-renewing SSL certificates
-// - HSTS headers
-
-// Strict-Transport-Security header:
-response.headers.set(
-  'Strict-Transport-Security',
-  'max-age=31536000; includeSubDomains'
-);
-```
-
-**B) Database Encryption**
-
-```sql
--- PostgreSQL with encryption at rest:
-CREATE DATABASE legalagent 
-  WITH ENCODING 'UTF8'
-  LC_COLLATE 'en_US.UTF-8'
-  LC_CTYPE 'en_US.UTF-8'
-  TEMPLATE template0;
-
--- SSL connection required:
-const db = drizzle(postgres(process.env.DATABASE_URL, {
-  ssl: { rejectUnauthorized: true }
-}));
-```
-
-**C) Sensitive Data Hashing**
-
-```typescript
-import crypto from 'crypto';
-
-// API keys:
-const apiKeyHash = crypto
-  .createHash('sha256')
-  .update(apiKey)
-  .digest('hex');
-
-// Store hash, not plaintext
-await db.insert(apiKeys).values({
-  keyHash: apiKeyHash,
-  // NOT: key: apiKey
-});
-```
-
-**D) Environment Variables**
-
-```bash
-# .env.local (NEVER commit):
-DATABASE_URL=postgres://...
-STRIPE_SECRET_KEY=sk_live_...
-GOOGLE_API_KEY=AIza...
-
-# .gitignore:
-.env*
-!.env.example
-```
-
----
-
-### **7. FILE UPLOAD SECURITY**
-
-#### **Status: ✅ IMPLEMENTED (100%)**
-
-**Measures:**
-
-```typescript
-import { validateFileUpload } from '@/lib/security/middleware';
-
-export async function POST(request: NextRequest) {
-  const formData = await request.formData();
-  const file = formData.get('file') as File;
-
-  // Validate file:
-  const validation = validateFileUpload(
-    file,
-    10, // Max 10MB
-    ['image/jpeg', 'image/png', 'application/pdf']
-  );
-
-  if (!validation.valid) {
-    return NextResponse.json(
-      { error: validation.error },
-      { status: 400 }
-    );
-  }
-
-  // Checks performed:
-  // ✅ File size (<10MB)
-  // ✅ MIME type whitelisting
-  // ✅ Extension matches MIME
-  // ✅ No executable files
-  // ✅ Virus scan (TODO: integrate ClamAV)
-}
-```
-
----
-
-### **8. SECURITY HEADERS**
-
-#### **Status: ✅ IMPLEMENTED (100%)**
-
-**All Responses Include:**
-
-```typescript
-import { addSecurityHeaders } from '@/lib/security/middleware';
-
-export async function middleware(request: NextRequest) {
-  const response = NextResponse.next();
-  return addSecurityHeaders(response);
-}
-
-// Headers added:
-response.headers.set('X-Frame-Options', 'DENY'); // Clickjacking
-response.headers.set('X-Content-Type-Options', 'nosniff'); // MIME sniffing
-response.headers.set('X-XSS-Protection', '1; mode=block'); // XSS
-response.headers.set('Strict-Transport-Security', 'max-age=31536000'); // HTTPS
-response.headers.set('Content-Security-Policy', '...'); // XSS/injection
-response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-response.headers.set('Permissions-Policy', 'camera=(), microphone=()');
-```
-
-**Verification:**
-
-```bash
-# Test headers:
-curl -I https://yourapp.com
-
-# Expected:
-# X-Frame-Options: DENY ✅
-# X-Content-Type-Options: nosniff ✅
-# Strict-Transport-Security: max-age=31536000 ✅
-# Content-Security-Policy: ... ✅
-```
-
----
-
-## 🔍 ADDITIONAL VULNERABILITIES CHECKED
-
-### **9. NoSQL Injection**
-
-```typescript
-import { sanitizeMongoQuery } from '@/lib/security/middleware';
-
-// Remove dangerous operators:
-const safe = sanitizeMongoQuery(userInput);
-
-// Removes: $where, $regex, $ne, etc.
-```
-
-**Status:** ✅ Protected (not using MongoDB, but sanitizer included)
-
----
-
-### **10. Open Redirect**
-
-```typescript
-// Validate redirect URLs:
-function isValidRedirect(url: string): boolean {
-  try {
-    const parsed = new URL(url);
-    const allowed = [
-      'legalagent.com',
-      'app.legalagent.com',
-    ];
-    return allowed.includes(parsed.hostname);
-  } catch {
-    return false;
-  }
-}
-```
-
-**Status:** ⚠️ TODO - Implement in auth flow
-
----
-
-### **11. Insecure Deserialization**
-
-```typescript
-// Never use eval() or Function()
-// ❌ DANGEROUS:
-eval(userInput);
-new Function(userInput)();
-
-// ✅ SAFE:
-JSON.parse(userInput); // Safe if catching errors
-```
-
-**Status:** ✅ Not using dangerous functions
-
----
-
-### **12. API Key Exposure**
-
-```typescript
-// Client-side code NEVER includes:
-// ❌ STRIPE_SECRET_KEY
-// ❌ DATABASE_URL
-// ❌ Any secret keys
-
-// Only public keys in client:
-// ✅ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-```
-
-**Status:** ✅ Environment variables properly separated
-
----
-
-## 📋 SECURITY CHECKLIST
-
-### **Application Security:**
-
-- [x] SQL Injection protection (Drizzle ORM)
-- [x] XSS prevention (HTML sanitization + CSP)
-- [x] CSRF protection (token validation)
-- [x] Rate limiting (per IP, per endpoint)
-- [x] Input validation (sanitizeInput)
-- [x] Output encoding (sanitizeHTML)
-- [x] Security headers (X-Frame-Options, CSP, etc.)
-- [ ] Authentication (NextAuth.js - TODO)
-- [ ] Authorization (RBAC - TODO)
-- [ ] Session management (JWT - TODO)
-
-### **Data Security:**
-
-- [x] HTTPS/TLS encryption
-- [x] Database encryption at rest
-- [x] Secure password hashing (bcrypt)
-- [x] API key hashing
-- [x] Environment variables protection
-- [ ] PII encryption (TODO)
-- [ ] Data backup encryption (TODO)
-
-### **Infrastructure:**
-
-- [x] DDoS protection (rate limiting)
-- [x] CDN (Vercel Edge)
-- [x] Auto-scaling (Vercel)
-- [ ] WAF (Cloudflare - recommended)
-- [ ] Redis for distributed rate limiting
-- [ ] Monitoring & alerting (Sentry)
-
-### **Compliance:**
-
-- [ ] SOC 2 Type II certification (in progress)
-- [x] GDPR compliance (data encryption, right to delete)
-- [x] CCPA compliance (privacy policy, opt-out)
-- [ ] HIPAA compliance (if handling medical data)
-- [ ] PCI DSS (Stripe handles this)
-
----
-
-## 🚨 RECOMMENDATIONS FOR PRODUCTION
-
-### **High Priority (Implement Before Launch):**
-
-1. **Authentication System**
-   ```bash
-   npm install next-auth bcrypt
-   # Implement full auth flow
-   # Estimated: 2 days
-   ```
-
-2. **Redis Rate Limiting**
-   ```bash
-   npm install ioredis
-   # Replace in-memory with Redis
-   # Estimated: 4 hours
-   ```
-
-3. **Monitoring & Alerts**
-   ```bash
-   npm install @sentry/nextjs
-   # Track errors, security events
-   # Estimated: 2 hours
-   ```
-
-### **Medium Priority (First Month):**
-
-4. **WAF (Web Application Firewall)**
-   - Use Cloudflare Pro ($20/mo)
-   - Blocks attacks at edge
-   - Estimated: 1 hour setup
-
-5. **Penetration Testing**
-   - Hire security firm
-   - Cost: $3K-10K
-   - Frequency: Annual
-
-6. **SOC 2 Certification**
-   - Hire auditor
-   - Cost: $15K-50K
-   - Timeline: 6-12 months
-
-### **Low Priority (Year 2):**
-
-7. **Bug Bounty Program**
-   - HackerOne or Bugcrowd
-   - $500-5,000 per vulnerability
-   - Crowd-sourced security
-
-8. **Security Training**
-   - OWASP training for team
-   - Secure coding practices
-   - Cost: $500/person
-
----
-
-## 📊 SECURITY SCORE BREAKDOWN
-
-```
-SQL Injection:        100/100 ✅
-XSS:                   95/100 ✅
-CSRF:                 100/100 ✅
-DDoS:                  90/100 ⚠️
-Authentication:         0/100 ❌ (Not implemented)
-Data Encryption:       98/100 ✅
-File Upload:          100/100 ✅
-Security Headers:     100/100 ✅
-Rate Limiting:         85/100 ⚠️ (needs Redis)
-Input Validation:      95/100 ✅
-
-OVERALL: 92/100 (A-)
-```
-
-**Conclusion:** ✅ **PRODUCTION READY** with auth implementation
-
----
-
-## 📞 INCIDENT RESPONSE PLAN
-
-### **In Case of Security Breach:**
-
-**Step 1: Contain (0-1 hour)**
-- Identify affected systems
-- Isolate compromised components
-- Block attacker IP addresses
-- Revoke compromised credentials
-
-**Step 2: Assess (1-4 hours)**
-- Determine scope of breach
-- Identify data accessed
-- Document timeline
-- Notify security team
-
-**Step 3: Notify (4-24 hours)**
-- Affected customers (if PII exposed)
-- Legal team
-- Insurance provider
-- Law enforcement (if required)
-
-**Step 4: Remediate (1-7 days)**
-- Patch vulnerabilities
-- Reset all passwords
-- Update security measures
-- Conduct forensic analysis
-
-**Step 5: Review (7-30 days)**
-- Post-mortem analysis
-- Update security policies
-- Implement preventive measures
-- Train team on lessons learned
-
----
-
-**Document Version:** 1.0  
-**Classification:** CONFIDENTIAL  
-**Next Review:** June 2024
+## 7. Owner / seguimiento
+
+- Tracker vivo: `docs/audit/findings-tracker.csv` (mantener IDs F-*; no duplicar).
+- Esta auditoría introduce `S-*` para hallazgos post-2026-08-11 que no existen en el tracker; al crear tickets, mapear cada `S-*` a un item del tracker.
+- Responsable: TBD (asignar en Phase 1 Stabilization).
