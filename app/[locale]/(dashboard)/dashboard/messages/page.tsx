@@ -100,6 +100,24 @@ export default function MessagesPage() {
   const [selectedConversation, setSelectedConversation] = useState(mockConversations[0]);
   const [searchTerm, setSearchTerm] = useState('');
 
+  return (
+    <section aria-labelledby="messages-title" className="max-w-3xl space-y-4">
+      <h1 id="messages-title" className="text-3xl font-serif italic tracking-tight text-[#DEDBC8]">
+        {isEs ? 'Mensajes' : 'Messages'}
+      </h1>
+      <div role="status" className="rounded-lg border border-white/10 bg-[#101010] p-6">
+        <h2 className="text-lg font-medium text-white">
+          {isEs ? 'Bandeja de mensajes no conectada' : 'Message inbox is not connected'}
+        </h2>
+        <p className="mt-2 text-sm text-gray-400">
+          {isEs
+            ? 'Las conversaciones de demostración se retiraron. Aquí aparecerán solo mensajes reales guardados de tu firma.'
+            : 'Demo conversations have been removed. Only real, persisted messages from your firm will appear here.'}
+        </p>
+      </div>
+    </section>
+  );
+
   const filteredConversations = mockConversations.filter(conv =>
     (conv.leadName?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
     (conv.email?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||

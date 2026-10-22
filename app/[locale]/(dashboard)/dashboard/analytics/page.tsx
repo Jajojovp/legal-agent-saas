@@ -67,6 +67,24 @@ export default function AnalyticsPage() {
   const locale = useLocale();
   const isEs = locale === 'es';
 
+  return (
+    <section aria-labelledby="analytics-title" className="max-w-3xl space-y-4">
+      <h1 id="analytics-title" className="text-3xl font-serif italic tracking-tight text-[#DEDBC8]">
+        {isEs ? 'Analíticas' : 'Analytics'}
+      </h1>
+      <div role="status" className="rounded-lg border border-white/10 bg-[#101010] p-6">
+        <h2 className="text-lg font-medium text-white">
+          {isEs ? 'Todavía no hay analíticas verificadas' : 'Verified analytics are not available yet'}
+        </h2>
+        <p className="mt-2 text-sm text-gray-400">
+          {isEs
+            ? 'No mostramos métricas de ejemplo como si fueran datos de tu firma. Esta sección estará disponible cuando use datos reales guardados.'
+            : 'We do not present sample metrics as your firm’s data. This section will be available when it is connected to persisted, real data.'}
+        </p>
+      </div>
+    </section>
+  );
+
   const funnelLabels: Record<string, string> = {
     visitors: t('visitors'),
     chatEngaged: t('chatEngaged'),

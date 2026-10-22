@@ -18,30 +18,54 @@ import {
   resolvePublicChatSession,
 } from '@/lib/chatbot/session';
 import { ZodError } from 'zod';
-
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+import { createHash } from 'node:crypto';
 
 class ChatStorageUnavailableError extends Error {}
-
-function checkRateLimit(key: string, limit: number, windowMs: number): boolean {
-  const now = Date.now();
-  const record = rateLimitMap.get(key);
-
-  if (!record || now > record.resetTime) {
-    rateLimitMap.set(key, { count: 1, resetTime: now + windowMs });
+async function checkDistributedRateLimit(key: string): Promise<boolean> {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  // Fail closed in production: a process-local fallback silently fails to
+  // protect traffic across instances and restarts.
+  if (!url || !token) {
+    if (process.env.NODE_ENV === 'production') throw new Error('Rate limiter unavailable');
     return true;
   }
 
-  if (record.count >= limit) return false;
-
-  record.count++;
-  return true;
+  const window = Math.floor(Date.now() / 60_000);
+  const redisKey = `legal-chat:${window}:${key}`;
+  const endpoint = `${url.replace(/\/$/, '')}/pipeline`;
+  let response: Response;
+  try {
+    response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify([
+        ['INCR', redisKey],
+        ['EXPIRE', redisKey, 120],
+      ]),
+      cache: 'no-store',
+      signal: AbortSignal.timeout(2000),
+    });
+  } catch {
+    throw new Error('Rate limiter unavailable');
+  }
+  if (!response.ok) throw new Error('Rate limiter unavailable');
+  const result = await response.json();
+  const count = Number(result?.[0]?.result);
+  if (!Number.isFinite(count)) throw new Error('Invalid rate limiter response');
+  return count <= 20;
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
-    if (!checkRateLimit(`chatbot-${ip}`, 20, 60000)) {
+    // Prefer the address supplied by the trusted reverse proxy; when using a
+    // proxy chain, the rightmost value is the last proxy-added client address.
+    const forwardedFor = request.headers.get('x-forwarded-for');
+    const clientAddress = request.headers.get('x-real-ip')?.trim() ||
+      forwardedFor?.split(',').at(-1)?.trim() ||
+      'unknown';
+    const rateLimitId = createHash('sha256').update(clientAddress).digest('hex');
+    if (!await checkDistributedRateLimit(rateLimitId)) {
       return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
     }
 
@@ -197,6 +221,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
     if (error instanceof ChatStorageUnavailableError) {
+      return NextResponse.json({ error: 'Chat service temporarily unavailable' }, { status: 503 });
+    }
+    if (error instanceof Error && error.message === 'Rate limiter unavailable') {
       return NextResponse.json({ error: 'Chat service temporarily unavailable' }, { status: 503 });
     }
     console.error('Chatbot error:', error.message);

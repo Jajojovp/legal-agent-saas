@@ -11,7 +11,6 @@ import {
   Users,
   Bell,
   Zap,
-  CreditCard,
   Shield,
   Globe,
   Mail
@@ -23,11 +22,28 @@ export default function SettingsPage() {
   const isEs = locale === 'es';
   const [activeTab, setActiveTab] = useState('firm');
 
+  return (
+    <section aria-labelledby="settings-title" className="max-w-3xl space-y-4">
+      <h1 id="settings-title" className="text-3xl font-serif italic tracking-tight text-[#DEDBC8]">
+        {isEs ? 'Configuración' : 'Settings'}
+      </h1>
+      <div role="status" className="rounded-lg border border-white/10 bg-[#101010] p-6">
+        <h2 className="text-lg font-medium text-white">
+          {isEs ? 'Configuración todavía no persistente' : 'Settings are not persisted yet'}
+        </h2>
+        <p className="mt-2 text-sm text-gray-400">
+          {isEs
+            ? 'No guardes información de clientes ni de tu firma aquí todavía. La edición se habilitará cuando exista almacenamiento seguro y verificado.'
+            : 'Do not enter client or firm information here yet. Editing will be enabled once secure, verified storage is available.'}
+        </p>
+      </div>
+    </section>
+  );
+
   const tabs = [
     { id: 'firm', label: t('firmProfile'), icon: Building2 },
     { id: 'team', label: t('teamMembers'), icon: Users },
     { id: 'integrations', label: t('integrations'), icon: Zap },
-    { id: 'billing', label: t('billingPlan'), icon: CreditCard },
     { id: 'notifications', label: t('notifications'), icon: Bell },
     { id: 'security', label: t('security'), icon: Shield }
   ];
@@ -215,13 +231,6 @@ export default function SettingsPage() {
                       category: isEs ? 'Productividad' : 'Productivity'
                     },
                     { 
-                      name: 'Stripe', 
-                      description: isEs ? 'Acepta pagos en línea de clientes' : 'Accept online payments from clients',
-                      icon: CreditCard,
-                      connected: false,
-                      category: isEs ? 'Pagos' : 'Payments'
-                    },
-                    { 
                       name: 'Resend', 
                       description: isEs ? 'Notificaciones de email automatizadas' : 'Automated email notifications',
                       icon: Mail,
@@ -269,67 +278,6 @@ export default function SettingsPage() {
             </Card>
           )}
 
-          {/* Billing & Plans */}
-          {activeTab === 'billing' && (
-            <div className="space-y-6">
-              <Card className="border border-white/5 bg-[#101010] shadow-xl">
-                <CardHeader>
-                  <CardTitle className="text-white">{t('currentPlan')}</CardTitle>
-                  <CardDescription className="text-gray-400">{t('currentPlanSubtitle')}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between p-4 border border-white/5 rounded-xl bg-white/[0.02]">
-                    <div>
-                      <h3 className="font-semibold text-lg text-white">{t('professionalPlan')}</h3>
-                      <p className="text-sm text-gray-400">{t('planDetails')}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-3xl font-bold text-white">$399</p>
-                      <p className="text-sm text-gray-400">{t('perMonth')}</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 space-y-4">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">{t('nextBillingDate')}</span>
-                      <span className="font-medium text-gray-200">May 1, 2024</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">{t('aiQueriesUsed')}</span>
-                      <span className="font-medium text-gray-200">247 / 500</span>
-                    </div>
-                    <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                      <div className="h-full bg-primary w-[49%]" />
-                    </div>
-                  </div>
-
-                  <div className="mt-6 flex gap-2">
-                    <Button variant="outline" className="border-white/10 text-gray-300 hover:bg-white/5">{t('changePlan')}</Button>
-                    <Button variant="outline" className="border-white/10 text-gray-300 hover:bg-white/5">{t('cancelSubscription')}</Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border border-white/5 bg-[#101010] shadow-xl">
-                <CardHeader>
-                  <CardTitle className="text-white">{t('paymentMethod')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between p-4 border border-white/5 rounded-xl">
-                    <div className="flex items-center gap-4">
-                      <CreditCard className="h-8 w-8 text-gray-400" />
-                      <div>
-                        <p className="font-medium text-white">Visa ending in 4242</p>
-                        <p className="text-sm text-gray-400">Expires 12/2025</p>
-                      </div>
-                    </div>
-                    <Button size="sm" variant="outline" className="border-white/10 text-gray-300 hover:bg-white/5">{t('update')}</Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
           {/* Notifications */}
           {activeTab === 'notifications' && (
             <Card className="border border-white/5 bg-[#101010] shadow-xl">
@@ -344,7 +292,6 @@ export default function SettingsPage() {
                     {[
                       { label: isEs ? 'Nuevo prospecto captado' : 'New lead captured', description: isEs ? 'Recibe notificación cuando el chatbot captura un nuevo prospecto' : 'Get notified when chatbot captures a new lead' },
                       { label: isEs ? 'Plazos de tareas' : 'Task deadlines', description: isEs ? 'Recordatorios para próximos plazos de casos' : 'Reminders for upcoming case deadlines' },
-                      { label: isEs ? 'Pago recibido' : 'Payment received', description: isEs ? 'Confirmaciones de pago de facturas' : 'Invoice payment confirmations' },
                       { label: isEs ? 'Menciones del equipo' : 'Team mentions', description: isEs ? 'Cuando alguien te menciona en una nota' : 'When someone mentions you in a note' }
                     ].map((notif, idx) => (
                       <label key={idx} className="flex items-start gap-3 p-3 border border-white/5 rounded-xl hover:bg-white/5 cursor-pointer transition-colors">

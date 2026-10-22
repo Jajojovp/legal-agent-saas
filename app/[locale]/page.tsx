@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { motion, useInView } from 'framer-motion';
 import { Link } from '@/i18n/navigation';
-import { ArrowRight, Check, Star, Quote, MessageSquare, Target, CreditCard } from 'lucide-react';
+import { ArrowRight, Check, Star, Quote, MessageSquare, Target, ShieldCheck } from 'lucide-react';
 import { WordsPullUp } from '@/components/ui/words-pull-up';
 import { AnimatedLetter } from '@/components/ui/animated-letter';
 import { ChatWidget } from '@/components/chatbot/chat-widget';
@@ -43,8 +43,8 @@ export default function Home() {
               <Link href="#about" className="text-[10px] sm:text-xs text-primary/80 hover:text-primary transition-colors uppercase tracking-widest font-medium">
                 {t('nav.features')}
               </Link>
-              <Link href="/pricing" className="text-[10px] sm:text-xs text-primary/80 hover:text-primary transition-colors uppercase tracking-widest font-medium">
-                {t('nav.pricing')}
+              <Link href="/register" className="text-[10px] sm:text-xs text-primary/80 hover:text-primary transition-colors uppercase tracking-widest font-medium">
+                {locale === 'es' ? 'Acceso gratuito' : 'Free access'}
               </Link>
               <Link href="/login" className="text-[10px] sm:text-xs text-primary/80 hover:text-primary transition-colors uppercase tracking-widest font-medium">
                 {t('nav.signIn')}
@@ -115,7 +115,7 @@ export default function Home() {
                 <span className="font-serif italic text-primary">{t('landing.about.title2', { defaultValue: 'an AI-powered OS.' })}</span>
               </h2>
               <p className="text-xl md:text-2xl text-gray-400 font-light leading-relaxed">
-                {t('landing.about.title3', { defaultValue: 'We automate cases, billing, and operations for modern law firms.' })}
+                {locale === 'es' ? 'Centralizamos asuntos, tareas y asistencia con IA para firmas modernas.' : 'We centralize matters, tasks, and AI assistance for modern law firms.'}
               </p>
             </motion.div>
 
@@ -191,12 +191,12 @@ export default function Home() {
               delay={0.45}
               isInView={isFeaturesInView}
               number="03"
-              title={t('sales.howItWorks.steps.3.title', { defaultValue: 'Rastrea y Cobra Más Rápido' })}
-              icon={CreditCard}
+              title={locale === 'es' ? 'Protege la información de tu firma' : 'Protect your firm data'}
+              icon={ShieldCheck}
               items={[
-                t('sales.howItWorks.steps.3.bullet1', { defaultValue: "Control de horas automatizado" }),
-                t('sales.howItWorks.steps.3.bullet2', { defaultValue: "Facturación con 1 clic" }),
-                t('sales.howItWorks.steps.3.bullet3', { defaultValue: "Procesamiento de pagos global" })
+                locale === 'es' ? 'Datos separados por firma' : 'Firm-isolated data',
+                locale === 'es' ? 'Acceso autenticado y auditable' : 'Authenticated, auditable access',
+                locale === 'es' ? 'Sin cobros ni límites por plan' : 'No charges or plan limits'
               ]}
               t={t}
             />
@@ -227,7 +227,7 @@ export default function Home() {
                 img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80"
               },
               {
-                quote: t('landing.testimonials.quote2', { defaultValue: "The automated billing and dual-currency support allowed us to seamlessly expand our practice across LATAM and the US." }),
+                quote: locale === 'es' ? 'Centralizamos asuntos y plazos sin depender de hojas de cálculo.' : 'We centralized matters and deadlines without relying on spreadsheets.',
                 name: "Carlos Mendoza",
                 role: t('landing.testimonials.role2', { defaultValue: "Founder, Mendoza Legal" }),
                 img: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&auto=format&fit=crop&q=80"
@@ -294,8 +294,8 @@ export default function Home() {
               {
                 title: locale === 'es' ? 'Automatización de Firmas Legales' : 'Law Firm Automation',
                 excerpt: locale === 'es'
-                  ? 'Guía paso a paso para automatizar facturación, seguimiento de casos y comunicación con clientes.'
-                  : 'Step-by-step guide to automate billing, case tracking and client communication.',
+                  ? 'Guía paso a paso para organizar asuntos, plazos y comunicación con clientes.'
+                  : 'Step-by-step guide to organize matters, deadlines, and client communication.',
                 image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80',
                 href: '/blog/law-firm-automation',
               },

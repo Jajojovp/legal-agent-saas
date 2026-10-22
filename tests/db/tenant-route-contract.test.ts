@@ -9,7 +9,7 @@ const tenantModules = [
   'app/api/tasks/route.ts',
   'app/api/dashboard/kpi/route.ts',
   'app/api/chatbot/message/route.ts',
-  'lib/payments/repository.ts',
+  'lib/ai/knowledge-base.ts',
 ];
 
 describe('tenant-sensitive database contract', () => {

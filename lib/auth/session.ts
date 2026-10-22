@@ -1,12 +1,11 @@
-import { getServerSession } from 'next-auth';
-import { getAuthOptions } from '@/app/api/auth/[...nextauth]/auth-options';
+import { auth } from '@/auth';
 import {
   parseAuthContext,
   type AuthContext,
 } from '@/lib/auth/context';
 
 export async function getAuthSession() {
-  return getServerSession(getAuthOptions());
+  return auth();
 }
 
 /**
@@ -19,7 +18,7 @@ export async function getAuthSession() {
  */
 export async function requireAuth(): Promise<AuthContext> {
   const session = await getAuthSession();
-  const context = parseAuthContext(session);
+  const context = parseAuthContext(session as any);
   if (!context) {
     throw new Error('Unauthorized');
   }

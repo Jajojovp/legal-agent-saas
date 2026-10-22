@@ -23,19 +23,20 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
-  const isEs = params.locale === 'es';
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const isEs = locale === 'es';
 
   return {
     title: isEs
       ? "LegalAgent SaaS — Gestión Legal con IA"
       : "LegalAgent SaaS — AI-Powered Legal Practice Management",
     description: isEs
-      ? "Plataforma completa de gestión para firmas de abogados. Chatbot IA, CRM, gestión de casos, facturación automática y analíticas."
-      : "Complete practice management platform for law firms. AI chatbot, CRM, case management, billing automation, and analytics.",
+      ? "Plataforma gratuita de gestión para firmas de abogados con CRM, asuntos, tareas y asistencia mediante IA."
+      : "Free legal practice platform with CRM, matters, tasks, and AI assistance.",
     keywords: isEs
-      ? "software legal, gestión de firmas, chatbot IA abogados, CRM legal, gestión de casos, facturación legal"
-      : "legal software, law firm management, AI chatbot for lawyers, legal CRM, case management, legal billing",
+      ? "software legal, gestión de firmas, chatbot IA abogados, CRM legal, gestión de casos"
+      : "legal software, law firm management, AI chatbot for lawyers, legal CRM, case management",
   };
 }
 
@@ -44,9 +45,9 @@ export default async function LocaleLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
-  const { locale } = params;
+  const { locale } = await params;
 
   // Validate locale
   if (!routing.locales.includes(locale as any)) {
@@ -57,8 +58,8 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
-      <body className={`${inter.variable} ${instrumentSerif.variable} font-sans`}>
+    <html lang={locale} className="dark">
+      <body className={`${inter.variable} ${instrumentSerif.variable} font-sans dark`}>
         <NextIntlClientProvider messages={messages}>
           <AuthSessionProvider>
             {children}

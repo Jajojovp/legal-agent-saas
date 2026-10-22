@@ -19,7 +19,6 @@ const pillarNames: Record<string, { en: string; es: string; icon: string }> = {
   'proteccion-datos': { en: 'Data Protection', es: 'Protección de Datos', icon: '🔒' },
   'gestion-despacho': { en: 'Firm Management', es: 'Gestión del Despacho', icon: '🏢' },
   'crm-juridico': { en: 'Legal CRM', es: 'CRM Jurídico', icon: '👥' },
-  'facturacion-legal': { en: 'Legal Billing', es: 'Facturación Legal', icon: '💰' },
   'agenda-judicial': { en: 'Court Calendar', es: 'Agenda Judicial', icon: '📅' },
   'investigacion-juridica': { en: 'Legal Research', es: 'Investigación Jurídica', icon: '🔍' },
   'firma-electronica': { en: 'E-Signature', es: 'Firma Electrónica', icon: '✍️' },

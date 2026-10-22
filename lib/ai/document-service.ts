@@ -12,7 +12,8 @@ export interface DocumentAnalysis {
 }
 
 export async function analyzeDocument(text: string, locale: string = 'es'): Promise<DocumentAnalysis> {
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  if (!process.env.GOOGLE_API_KEY) throw new Error('AIProviderNotConfigured');
+  const model = genAI.getGenerativeModel({ model: process.env.GOOGLE_AI_MODEL || 'gemini-1.5-flash' });
 
   const prompt = locale === 'es'
     ? `Analiza el siguiente documento legal. Identifica:
@@ -77,9 +78,6 @@ ${text}`;
 }
 
 export async function extractTextFromFile(file: File): Promise<string> {
-  if (file.type === 'text/plain') {
-    return await file.text();
-  }
-
+  if (file.type !== 'text/plain') throw new Error('UnsupportedFileType');
   return await file.text();
 }

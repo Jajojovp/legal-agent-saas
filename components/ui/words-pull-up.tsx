@@ -28,7 +28,7 @@ export function WordsPullUp({ text, className = '', showAsterisk = false }: Word
   };
 
   return (
-    <motion.div
+    <motion.h1
       ref={ref}
       variants={container}
       initial="hidden"
@@ -66,6 +66,6 @@ export function WordsPullUp({ text, className = '', showAsterisk = false }: Word
           </motion.span>
         );
       })}
-    </motion.div>
+    </motion.h1>
   );
 }

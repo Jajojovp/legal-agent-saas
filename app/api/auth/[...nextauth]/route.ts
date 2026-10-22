@@ -1,13 +1,10 @@
-import NextAuth from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthOptions } from './auth-options';
+import { handlers } from '@/auth';
 import { isDbAvailable } from '@/lib/db';
 
 // Build options once at module load (lazy + memoized) — safe for `next build`
 // even when no DB is configured, because {@link getAuthOptions} no longer
 // constructs `DrizzleAdapter({})` at module scope.
-const handler = NextAuth(getAuthOptions());
-
 /**
  * Response for the auth route that converts DB-dependent-auth failures into
  * HTTP 503 (without masking genuine runtime errors).`
@@ -34,7 +31,7 @@ function isDbDependentAuthPath(url: URL): boolean {
   return false;
 }
 
-async function guarded(req: NextRequest, ctx: any) {
+async function guarded(req: NextRequest, handler: (request: NextRequest) => Promise<Response>) {
   if (!isDbAvailable) {
     const url = new URL(req.url);
     if (isDbDependentAuthPath(url)) {
@@ -48,7 +45,7 @@ async function guarded(req: NextRequest, ctx: any) {
     }
   }
   try {
-    return await handler(req, ctx);
+    return await handler(req);
   } catch (err: any) {
     // Sentinel set by `authorize` and other helpers when the DB is gone.
     if (err?.message === 'DatabaseUnavailable') {
@@ -63,4 +60,5 @@ async function guarded(req: NextRequest, ctx: any) {
   }
 }
 
-export { guarded as GET, guarded as POST };
+export const GET = (req: NextRequest) => guarded(req, handlers.GET);
+export const POST = (req: NextRequest) => guarded(req, handlers.POST);

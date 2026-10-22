@@ -1,4 +1,4 @@
-import { NextAuthOptions } from 'next-auth';
+import type { NextAuthConfig } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
@@ -25,12 +25,12 @@ import { enrichJwtToken, buildSessionUser } from '@/lib/auth/context';
  * `providers` eagerly once per server instance; rebuilding it per request
  * would re-register state unnecessarily.
  */
-let cachedOptions: NextAuthOptions | null = null;
+let cachedOptions: NextAuthConfig | null = null;
 
-export function getAuthOptions(): NextAuthOptions {
+export function getAuthOptions(): NextAuthConfig {
   if (cachedOptions) return cachedOptions;
-
-  const options: NextAuthOptions = {
+  const options: NextAuthConfig = {
+    trustHost: process.env.AUTH_TRUST_HOST === 'true',
     // Adapter only installed when a real DB client is available. When the
     // database is absent we keep `adapter: undefined` so JWT-only flows
     // (session read, csrf) keep working — any operation that genuinely
@@ -67,7 +67,7 @@ export function getAuthOptions(): NextAuthOptions {
           // P0-001: inactive users must not be able to sign in.
           if (user.isActive === false) return null;
 
-          const isValid = await compare(credentials.password, user.hashedPassword);
+          const isValid = await compare(String(credentials.password), user.hashedPassword);
           if (!isValid) return null;
 
           return {
@@ -98,7 +98,9 @@ export function getAuthOptions(): NextAuthOptions {
     ],
     session: {
       strategy: 'jwt',
-      maxAge: 30 * 24 * 60 * 60,
+      // Keep stale tenant/role claims short-lived. A future server-side
+      // session-version check can provide immediate revocation.
+      maxAge: 60 * 60,
     },
     pages: {
       signIn: '/login',
@@ -107,7 +109,8 @@ export function getAuthOptions(): NextAuthOptions {
     callbacks: {
       session({ session, token }) {
         // P0-001: propagate firmId/role/isActive onto session.user.
-        return buildSessionUser(session, token as any);
+        buildSessionUser(session as any, token as any);
+        return session;
       },
       jwt({ token, user }) {
         // P0-001: on first sign-in, enrich the JWT with tenant context.
@@ -122,3 +125,4 @@ export function getAuthOptions(): NextAuthOptions {
   cachedOptions = options;
   return options;
 }
+

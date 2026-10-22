@@ -1,9 +1,10 @@
 'use client';
 
+import { useState } from 'react';
+
 import { 
   LayoutDashboard, Users, FileText, Calendar,
-  DollarSign, BarChart3, Settings, MessageSquare,
-  Bell, Search, Menu, Globe, LogOut
+  Bell, Search, Menu, Globe, LogOut, X
 } from 'lucide-react';
 import { Link, usePathname } from '@/i18n/navigation';
 import { useTranslations, useLocale } from 'next-intl';
@@ -20,16 +21,13 @@ export default function DashboardLayout({
   const locale = useLocale();
   const otherLocale = locale === 'en' ? 'es' : 'en';
   const { data: session } = useSession();
+  const [mobileNavigationOpen, setMobileNavigationOpen] = useState(false);
 
   const navigation = [
     { name: t('dashboard'), href: `/dashboard`, icon: LayoutDashboard },
     { name: t('leads'), href: `/dashboard/leads`, icon: Users },
     { name: t('cases'), href: `/dashboard/cases`, icon: FileText },
     { name: t('tasks'), href: `/dashboard/tasks`, icon: Calendar },
-    { name: t('billing'), href: `/dashboard/billing`, icon: DollarSign },
-    { name: t('analytics'), href: `/dashboard/analytics`, icon: BarChart3 },
-    { name: t('messages'), href: `/dashboard/messages`, icon: MessageSquare },
-    { name: t('settings'), href: `/dashboard/settings`, icon: Settings },
   ];
   
   const pathname = usePathname();
@@ -37,7 +35,14 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-[#05070A] font-sans selection:bg-primary/30 selection:text-primary">
       {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-[#0B0F15] border-r border-white/5 shadow-2xl">
+      {mobileNavigationOpen && (
+        <button
+          className="fixed inset-0 z-40 bg-black/70 lg:hidden"
+          aria-label="Close navigation overlay"
+          onClick={() => setMobileNavigationOpen(false)}
+        />
+      )}
+      <aside className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-[#0B0F15] border-r border-white/5 shadow-2xl transition-transform lg:translate-x-0 ${mobileNavigationOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         {/* Logo */}
         <div className="flex h-20 items-center gap-2 px-6 border-b border-white/5">
           <Link href="/" className="flex items-center gap-3 group">
@@ -48,6 +53,9 @@ export default function DashboardLayout({
               LegalAgent
             </span>
           </Link>
+          <button className="ml-auto text-gray-400 hover:text-white lg:hidden" aria-label="Close navigation" onClick={() => setMobileNavigationOpen(false)}>
+            <X className="h-5 w-5" />
+          </button>
         </div>
 
         {/* Navigation */}
@@ -60,6 +68,7 @@ export default function DashboardLayout({
                 key={item.name}
                 href={item.href}
                 prefetch={true}
+                onClick={() => setMobileNavigationOpen(false)}
                 className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
                   isActive 
                     ? 'bg-[#1A1A1A] text-primary border border-white/5 shadow-sm' 
@@ -104,12 +113,21 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main Content */}
-      <div className="pl-64">
+      <div className="lg:pl-64">
         {/* Top Header */}
         <header className="sticky top-0 z-40 bg-[#0B0F15]/80 backdrop-blur-xl border-b border-white/5">
-          <div className="flex h-20 items-center gap-4 px-8">
+          <div className="flex h-16 items-center gap-3 px-4 sm:px-6 lg:h-20 lg:px-8">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="shrink-0 text-gray-300 lg:hidden"
+              aria-label="Open navigation"
+              onClick={() => setMobileNavigationOpen(true)}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
             {/* Search */}
-            <div className="flex-1 max-w-md">
+            <div className="hidden flex-1 sm:block sm:max-w-md">
               <div className="relative group">
                 <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors" />
                 <input
@@ -126,15 +144,12 @@ export default function DashboardLayout({
                 <Bell className="h-5 w-5" />
                 <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-primary ring-2 ring-[#0B0F15]" />
               </Button>
-              <Button variant="ghost" size="icon" className="hover:bg-white/5 text-gray-400 hover:text-white rounded-full">
-                <Menu className="h-5 w-5" />
-              </Button>
             </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <main className="p-8">
+        <main className="p-4 sm:p-6 lg:p-8">
           {children}
         </main>
       </div>

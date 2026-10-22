@@ -1,191 +1,52 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { useLocale } from 'next-intl';
+import { Briefcase, Plus, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { 
-  Plus, Search, FileText, Calendar, DollarSign, User,
-  AlertCircle, CheckCircle, Clock, XCircle, Filter, ArrowUpRight
-} from 'lucide-react';
-import { Link } from '@/i18n/navigation';
+import { Card, CardContent } from '@/components/ui/card';
 import { Modal } from '@/components/ui/modal';
 
-const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
-  intake: { label: 'Intake', color: 'bg-blue-500/10 text-blue-400 border border-blue-500/20', icon: FileText },
-  active: { label: 'Active', color: 'bg-green-500/10 text-green-400 border border-green-500/20', icon: CheckCircle },
-  pending: { label: 'Pending', color: 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20', icon: Clock },
-  'closed-won': { label: 'Closed - Won', color: 'bg-gray-500/10 text-gray-400 border border-gray-500/20', icon: CheckCircle },
-  'closed-lost': { label: 'Closed - Lost', color: 'bg-red-500/10 text-red-400 border border-red-500/20', icon: XCircle },
-};
-
-const practiceAreaColors: Record<string, string> = {
-  'Personal Injury': 'border-l-red-500',
-  'Family Law': 'border-l-blue-500',
-  'Criminal Defense': 'border-l-yellow-500',
-  'Estate Planning': 'border-l-purple-500',
-  'Business Law': 'border-l-green-500',
-};
-
-const mockCases = [
-  {
-    id: 1, caseNumber: 'CASE-2024-0142', clientName: 'John Smith',
-    practiceArea: 'Personal Injury', status: 'active',
-    assignedAttorney: 'Jane Doe',
-    description: 'Car accident on Highway 101, rear-end collision',
-    estimatedValue: 75000, createdAt: '2024-03-15T10:00:00Z',
-    nextDeadline: '2024-04-25T09:00:00Z', nextDeadlineTask: 'File Motion to Compel',
-  },
-  {
-    id: 2, caseNumber: 'CASE-2024-0141', clientName: 'Sarah Johnson',
-    practiceArea: 'Family Law', status: 'intake',
-    assignedAttorney: 'John Doe',
-    description: 'Divorce proceeding with child custody dispute',
-    estimatedValue: 45000, createdAt: '2024-03-14T14:30:00Z',
-    nextDeadline: null, nextDeadlineTask: null,
-  },
-];
-
-const statusFilters = ['all', 'intake', 'active', 'pending', 'closed-won', 'closed-lost'];
+type CaseRecord = { id: number; caseNumber: string; clientName: string; practiceArea: string | null; status: string | null; description: string | null; estimatedValue: string | null };
+const areas = ['personal-injury', 'family-law', 'criminal-defense', 'estate-planning', 'business-law', 'real-estate', 'immigration', 'employment-law', 'bankruptcy', 'intellectual-property'];
 
 export default function CasesPage() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [showNewCase, setShowNewCase] = useState(false);
-  const [newCase, setNewCase] = useState({ clientName: '', practiceArea: '', description: '' });
+  const es = useLocale().startsWith('es');
+  const copy = es ? { title: 'Casos', subtitle: 'Gestiona los asuntos reales de tu firma', create: 'Nuevo caso', loading: 'Cargando casos…', empty: 'Todavía no hay casos. Crea el primero.', error: 'No pudimos cargar los casos.', retry: 'Reintentar', client: 'Cliente', area: 'Área jurídica', description: 'Descripción', value: 'Valor estimado', save: 'Crear caso', cancel: 'Cancelar', saving: 'Guardando…', required: 'Completa los campos obligatorios.' } : { title: 'Cases', subtitle: 'Manage your firm’s real matters', create: 'New case', loading: 'Loading cases…', empty: 'No cases yet. Create the first one.', error: 'We could not load the cases.', retry: 'Retry', client: 'Client', area: 'Practice area', description: 'Description', value: 'Estimated value', save: 'Create case', cancel: 'Cancel', saving: 'Saving…', required: 'Complete the required fields.' };
+  const [items, setItems] = useState<CaseRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({ clientName: '', practiceArea: '', description: '', estimatedValue: '' });
 
-  const filteredCases = mockCases.filter(c => {
-    if (statusFilter !== 'all' && c.status !== statusFilter) return false;
-    if (searchQuery && !c.clientName.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    return true;
-  });
+  const load = useCallback(async () => {
+    setLoading(true); setError('');
+    try {
+      const response = await fetch('/api/cases', { cache: 'no-store' });
+      if (!response.ok) throw new Error();
+      setItems((await response.json()).cases ?? []);
+    } catch { setError(copy.error); } finally { setLoading(false); }
+  }, [copy.error]);
+  useEffect(() => { void load(); }, [load]);
 
-  const handleCreateCase = () => {
-    console.log('Create case:', newCase);
-    setShowNewCase(false);
-    setNewCase({ clientName: '', practiceArea: '', description: '' });
-  };
+  async function submit(event: FormEvent) {
+    event.preventDefault(); setError('');
+    if (!form.clientName.trim() || !form.practiceArea) { setError(copy.required); return; }
+    setSaving(true);
+    try {
+      const response = await fetch('/api/cases', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, estimatedValue: form.estimatedValue ? Number(form.estimatedValue) : undefined }) });
+      if (!response.ok) throw new Error();
+      const data = await response.json();
+      setItems(current => [data.case, ...current]); setOpen(false);
+      setForm({ clientName: '', practiceArea: '', description: '', estimatedValue: '' });
+    } catch { setError(es ? 'No pudimos crear el caso.' : 'We could not create the case.'); } finally { setSaving(false); }
+  }
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-serif italic text-[#DEDBC8]">Cases</h1>
-          <p className="text-gray-400 text-sm mt-1">Manage your firm&apos;s active cases</p>
-        </div>
-        <Button onClick={() => setShowNewCase(true)} className="bg-primary hover:bg-primary/90 text-black font-medium">
-          <Plus className="h-4 w-4 mr-2" /> New Case
-        </Button>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-          <input
-            type="text"
-            placeholder="Search cases..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-[#101010] border border-white/5 rounded-xl text-white placeholder:text-gray-600 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/50 text-sm"
-          />
-        </div>
-        <div className="flex gap-1">
-          {statusFilters.map((s) => (
-            <button
-              key={s}
-              onClick={() => setStatusFilter(s)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                statusFilter === s
-                  ? 'bg-primary/10 text-primary border border-primary/20'
-                  : 'text-gray-500 hover:text-gray-300 border border-transparent'
-              }`}
-            >
-              {s === 'all' ? 'All' : statusConfig[s]?.label || s}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        {filteredCases.length === 0 ? (
-          <Card className="border border-white/5 bg-[#101010]">
-            <CardContent className="p-12 text-center">
-              <FileText className="h-12 w-12 mx-auto text-gray-600 mb-4" />
-              <p className="text-gray-400 text-sm">No cases found matching your filters</p>
-            </CardContent>
-          </Card>
-        ) : filteredCases.map((c) => {
-          const status = statusConfig[c.status];
-          const StatusIcon = status?.icon;
-          return (
-            <div
-              key={c.id}
-              className={`bg-[#101010] border border-white/5 rounded-xl p-5 hover:border-white/10 transition-colors cursor-pointer ${practiceAreaColors[c.practiceArea] || ''}`}
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-medium text-white">{c.clientName}</h3>
-                    {status && (
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium ${status.color}`}>
-                        <StatusIcon className="h-3 w-3" />
-                        {status.label}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-400 line-clamp-1">{c.description}</p>
-                  <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
-                    <span className="flex items-center gap-1"><FileText className="h-3 w-3" /> {c.caseNumber}</span>
-                    <span className="flex items-center gap-1"><User className="h-3 w-3" /> {c.assignedAttorney}</span>
-                    <span className="flex items-center gap-1"><DollarSign className="h-3 w-3" /> ${c.estimatedValue?.toLocaleString()}</span>
-                    {c.nextDeadline && (
-                      <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {c.nextDeadlineTask}</span>
-                    )}
-                  </div>
-                </div>
-                <ArrowUpRight className="h-4 w-4 text-gray-600 shrink-0 mt-1" />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <Modal isOpen={showNewCase} onClose={() => setShowNewCase(false)} title="Create New Case">
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Client Name</label>
-            <input
-              type="text" value={newCase.clientName}
-              onChange={(e) => setNewCase({ ...newCase, clientName: e.target.value })}
-              className="w-full px-3 py-2 bg-[#1A1A1A] border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none text-sm"
-              placeholder="Enter client name"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Practice Area</label>
-            <input
-              type="text" value={newCase.practiceArea}
-              onChange={(e) => setNewCase({ ...newCase, practiceArea: e.target.value })}
-              className="w-full px-3 py-2 bg-[#1A1A1A] border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none text-sm"
-              placeholder="e.g., Personal Injury"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
-            <textarea
-              value={newCase.description}
-              onChange={(e) => setNewCase({ ...newCase, description: e.target.value })}
-              className="w-full px-3 py-2 bg-[#1A1A1A] border border-white/10 rounded-xl text-white focus:border-primary focus:outline-none text-sm resize-none"
-              rows={3}
-              placeholder="Case description"
-            />
-          </div>
-          <div className="flex gap-3 pt-2">
-            <Button onClick={handleCreateCase} className="bg-primary hover:bg-primary/90 text-black flex-1">Create Case</Button>
-            <Button onClick={() => setShowNewCase(false)} variant="outline" className="border-white/10 text-gray-300 hover:bg-white/5 flex-1">Cancel</Button>
-          </div>
-        </div>
-      </Modal>
-    </div>
-  );
+  return <div className="space-y-6">
+    <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div><h1 className="text-3xl font-serif italic text-[#DEDBC8]">{copy.title}</h1><p className="mt-1 text-sm text-gray-400">{copy.subtitle}</p></div><Button onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" />{copy.create}</Button></header>
+    {error && <div role="alert" className="flex items-center justify-between rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300"><span>{error}</span><Button variant="ghost" size="sm" onClick={() => void load()}><RefreshCw className="mr-2 h-4 w-4" />{copy.retry}</Button></div>}
+    {loading ? <p role="status" className="py-12 text-center text-gray-400">{copy.loading}</p> : items.length === 0 ? <Card className="border-white/5 bg-[#101010]"><CardContent className="p-12 text-center"><Briefcase className="mx-auto mb-3 h-10 w-10 text-gray-600" /><p className="text-gray-400">{copy.empty}</p></CardContent></Card> : <ul className="space-y-3">{items.map(item => <li key={item.id} className="rounded-xl border border-white/5 bg-[#101010] p-5"><div className="flex flex-wrap items-start justify-between gap-2"><div><h2 className="font-medium text-white">{item.clientName}</h2><p className="mt-1 text-sm text-gray-400">{item.description || '—'}</p></div><span className="rounded border border-primary/20 bg-primary/10 px-2 py-1 text-xs text-primary">{item.status}</span></div><div className="mt-3 flex flex-wrap gap-4 text-xs text-gray-500"><span>{item.caseNumber}</span><span>{item.practiceArea?.replaceAll('-', ' ')}</span>{item.estimatedValue && <span>${Number(item.estimatedValue).toLocaleString()}</span>}</div></li>)}</ul>}
+    <Modal isOpen={open} onClose={() => setOpen(false)} title={copy.create}><form onSubmit={submit} className="space-y-4"><label className="block text-sm text-gray-300">{copy.client}<input required maxLength={160} value={form.clientName} onChange={e => setForm({ ...form, clientName: e.target.value })} className="mt-1 w-full rounded-md border border-white/10 bg-[#1A1A1A] px-3 py-2 text-white" /></label><label className="block text-sm text-gray-300">{copy.area}<select required value={form.practiceArea} onChange={e => setForm({ ...form, practiceArea: e.target.value })} className="mt-1 w-full rounded-md border border-white/10 bg-[#1A1A1A] px-3 py-2 text-white"><option value="">—</option>{areas.map(area => <option key={area} value={area}>{area.replaceAll('-', ' ')}</option>)}</select></label><label className="block text-sm text-gray-300">{copy.description}<textarea maxLength={4000} rows={3} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="mt-1 w-full resize-none rounded-md border border-white/10 bg-[#1A1A1A] px-3 py-2 text-white" /></label><label className="block text-sm text-gray-300">{copy.value}<input type="number" min="0" step="0.01" value={form.estimatedValue} onChange={e => setForm({ ...form, estimatedValue: e.target.value })} className="mt-1 w-full rounded-md border border-white/10 bg-[#1A1A1A] px-3 py-2 text-white" /></label><div className="flex gap-3"><Button type="submit" disabled={saving} className="flex-1">{saving ? copy.saving : copy.save}</Button><Button type="button" variant="outline" onClick={() => setOpen(false)} className="flex-1">{copy.cancel}</Button></div></form></Modal>
+  </div>;
 }

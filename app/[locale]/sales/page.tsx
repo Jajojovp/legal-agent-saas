@@ -107,8 +107,8 @@ export default function FeaturesPage() {
                 {
                   title: locale === 'es' ? 'Todo en un solo lugar' : 'All in one place',
                   desc: locale === 'es'
-                    ? 'CRM, gestión de casos, facturación y analíticas en una plataforma integrada y fácil de usar.'
-                    : 'CRM, case management, billing and analytics in one integrated, easy-to-use platform.',
+                    ? 'CRM, gestión de asuntos, tareas e IA en una plataforma integrada y fácil de usar.'
+                    : 'CRM, matter management, tasks, and AI in one integrated, easy-to-use platform.',
                 },
                 {
                   title: locale === 'es' ? 'Diseñado para firmas modernas' : 'Designed for modern firms',
